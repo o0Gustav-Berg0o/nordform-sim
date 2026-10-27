@@ -115,9 +115,76 @@ Ingen påverkan på resultat. Simuleringsmotorn finns ännu inte i kärnan (NF-0
 
 ### Checklista
 
-- [ ] Bygger utan varningar (ej verifierat, se NF-005)
-- [ ] Alla tester passerar (ej verifierat, se NF-005)
+- [x] Bygger utan varningar (verifierat i NF-005)
+- [x] Alla tester passerar (verifierat i NF-005)
 - [x] Nya tester för ny logik
 - [x] Samma seed ger samma resultat (gäller dataformaten, motorn kommer i NF-010)
+- [x] Tavlan i README är uppdaterad
+- [x] Ingen verklig kunddata i ändringen
+
+---
+
+## PR-0002: Simuleringsmotor i C#
+
+Ärenden på tavlan: NF-010, NF-011, NF-012, NF-015.
+
+### Sammanfattning
+
+Porterar simuleringen från webbprototypen till kärnan i C#. Motorn är deterministisk, läser layout, produkter och scenario från JSON och använder en `IDispatchStrategy` för att fördela transportuppdrag. CLI:n kör nu alla tre strategier mot ett scenario och skriver en jämförelse.
+
+### Motivering
+
+Utan motor går inget att mäta i .NET-koden, och inga planeringsmetoder kan testas eller jämföras reproducerbart. Motorn är det som resten av tavlan (batchkörning, API, scenariotester, studenternas strategier) bygger på.
+
+### Ändringar
+
+**core**
+- `SimulationEngine`: tidssteg, orderflöde ur produktmix och arbetsplan, val av station när flera av samma typ finns (minst last, lika last avgörs av slumpen), truckens tillståndsmaskin, mätvärden och händelselogg.
+- `Rng`: mulberry32, samma talföljd som prototypen oavsett .NET-version.
+- `Layout` har fått fältet `ParkingNodes`. Truckar parkerar efter 45 sekunder utan uppdrag.
+- `EngineOptions`: truckhastighet, lastningstid, parkeringstid, tidssteg, andel brådskande order.
+
+**data**
+- `furniture-line.json`: `parkingNodes` (P0 till P4).
+
+**cli**
+- Kör `Fifo`, `Nearest` och `UrgentThenNearest` på samma scenario och skriver en tabell.
+
+**test**
+- `RngTests`: samma talföljd som prototypen för seed 4217, determinism, intervall.
+- `EngineTests`: samma seed ger samma mätvärden, annan seed ger annat utfall, rimliga mätvärden, pallar bevaras och WIP summerar rätt, inga två truckar delar uppdrag, alla strategier levererar, blockerad korridor ger omväg och ändrad sträcka, saknad stationstyp ger tydligt fel, händelser loggas.
+
+### Så testar du
+
+```bash
+dotnet build
+dotnet test
+dotnet run --project src/Nordform.Sim.Cli
+dotnet run --project src/Nordform.Sim.Cli data data/scenarios/high-load.json
+```
+
+### Resultat
+
+Motorn är ny, så det finns inga tidigare siffror att jämföra mot. Utskrift från `dotnet run --project src/Nordform.Sim.Cli` (scenario Normal dag, seed 4217, 30 min simulerad tid):
+
+| Metod | Tomkörning | Snittväntan | Order | Sträcka |
+|---|---|---|---|---|
+| Äldsta uppdrag först | 66 % | 11 s | 25 | 18,00 km |
+| Närmaste uppdrag | 65 % | 10 s | 26 | 18,15 km |
+| Brådskande först | 65 % | 10 s | 26 | 18,15 km |
+
+### Risker och begränsningar
+
+- Resultaten är inte identiska med webbprototypen. Motorn drar ett extra slumptal för produktval och stationsval, så talföljden hamnar i annan ordning. Jämförelsen mot prototypen är NF-016.
+- Trucken följer inga trafikregler och kolliderar inte med andra. Två truckar kan stå på samma nod.
+- Stationer har obegränsad kapacitet och ingen omställningstid ännu (NF-013).
+- En truck som är på väg till parkering och tilldelas ett uppdrag räknas från nästa nod på vägen i strategin, inte från sin exakta position.
+
+### Checklista
+
+- [x] Bygger utan varningar (verifierat i NF-005: `dotnet build`, 0 varningar, 0 fel)
+- [x] Alla tester passerar (verifierat i NF-005: `dotnet test`, 25 av 25 gröna)
+- [x] Nya tester för ny logik
+- [x] Samma seed ger samma resultat (testat i `EngineTests`)
 - [x] Tavlan i README är uppdaterad
 - [x] Ingen verklig kunddata i ändringen

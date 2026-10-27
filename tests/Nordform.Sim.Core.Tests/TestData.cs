@@ -18,4 +18,19 @@ internal static class TestData
             dir = dir.Parent;
         return dir?.FullName ?? throw new InvalidOperationException("Hittar inte repots rot");
     }
+
+    public static string DataPath(params string[] parts) =>
+        Path.Combine(new[] { RepoRoot(), "data" }.Concat(parts).ToArray());
+
+    public static Layout FurnitureLayout() =>
+        JsonData.Load<Layout>(DataPath("layouts", "furniture-line.json"));
+
+    public static List<Product> FurnitureProducts() =>
+        JsonData.Load<List<Product>>(DataPath("products", "furniture-products.json"));
+
+    public static Scenario LoadScenario(string file = "normal-day.json") =>
+        JsonData.Load<Scenario>(DataPath("scenarios", file));
+
+    public static SimulationEngine Engine(IDispatchStrategy? strategy = null, string scenarioFile = "normal-day.json") =>
+        new(FurnitureLayout(), FurnitureProducts(), LoadScenario(scenarioFile), strategy ?? new NearestStrategy());
 }

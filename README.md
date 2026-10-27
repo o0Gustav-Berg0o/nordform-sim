@@ -31,13 +31,13 @@ Kräver [.NET 10 SDK](https://dotnet.microsoft.com/download).
 ```bash
 dotnet build
 dotnet test
-dotnet run --project src/Nordform.Sim.Cli            # läser layouten och visar grunddata
+dotnet run --project src/Nordform.Sim.Cli            # kör alla tre strategier på normal-day och skriver en jämförelse
 dotnet run --project src/Nordform.Sim.Api            # /health och /strategies
 ```
 
 Prototypen av kartan körs direkt i webbläsaren, utan bygge: öppna `prototype/nordform-map.html`.
 
-> Status: strukturen är skapad utan tillgång till .NET SDK, så `dotnet build` och `dotnet test` är ännu inte körda. Det är första punkten på tavlan (NF-005).
+> Status: `dotnet build` och `dotnet test` är körda och gröna (NF-005): 0 fel, 0 varningar, 25 av 25 tester passerar.
 
 ## Teknikstack
 
@@ -56,8 +56,8 @@ Prototypen av kartan körs direkt i webbläsaren, utan bygge: öppna `prototype/
 ```
 Nordform.Sim.slnx
 src/
-  Nordform.Sim.Core/     Modeller, PathFinder, planeringsstrategier
-  Nordform.Sim.Cli/      Kommandorad och batchkörning (kommer)
+  Nordform.Sim.Core/     Modeller, PathFinder, planeringsstrategier, SimulationEngine, Rng
+  Nordform.Sim.Cli/      Kommandorad: kör strategierna mot ett scenario och jämför
   Nordform.Sim.Api/      Web API och live-ström (kommer)
 tests/
   Nordform.Sim.Core.Tests/
@@ -95,17 +95,10 @@ Den här listan är projektets issue-tavla. Varje rad är ett ärende.
 - Ett ärende ska bli en pull request. Beskriv den enligt [docs/PR-README.md](docs/PR-README.md) och ange ID i titeln, till exempel `NF-010: Simuleringsmotor`.
 - Beroenden anges som `beror på NF-nnn`.
 
-### Pågår
-
-_Inget pågår just nu._
-
 ### Nästa (P1)
 
-- [ ] **NF-005** `[ci]` Kör `dotnet build` och `dotnet test` och rätta det som inte kompilerar. (S)
-- [ ] **NF-010** `[core]` Simuleringsmotor med fast tidssteg och deterministisk slumpgenerator, portad från prototypen. (L)
-- [ ] **NF-011** `[core]` Truckens tillståndsmaskin: ledig, till hämtning, lastar, levererar, lossar, parkerar. (M, beror på NF-010)
-- [ ] **NF-012** `[core]` Skapa order ur produktmix och arbetsplan, med val mellan alternativa stationer (Montering A eller B). (M, beror på NF-010)
-- [ ] **NF-015** `[core]` Mätvärden: tomkörning, snittväntan, sträcka, kö, utnyttjande, levererade order. (M, beror på NF-010)
+- [ ] **NF-016** `[core]` Jämför motorns resultat med webbprototypen för samma seed och förklara skillnaderna (produktmix och stationsval drar slumptal i annan ordning). (S, beror på NF-005)
+- [ ] **NF-040** `[cli]` Batchrunner som kör strategier × scenarier × seeds och skriver CSV och JSON. Första versionen finns i CLI:n, men skriver bara en tabell. (M, beror på NF-005)
 
 ### Backlog (P2)
 
@@ -114,7 +107,6 @@ _Inget pågår just nu._
 - [ ] **NF-030** `[test]` Scenariotester: situation i JSON med förväntat beteende. (M, beror på NF-010)
 - [ ] **NF-031** `[test]` Egenskapstester med FsCheck, till exempel att ingen truck har två uppdrag samtidigt. (M, beror på NF-010)
 - [ ] **NF-032** `[test]` Regressionsbaslinje: spara mätvärden per seed och larma vid försämring. (M, beror på NF-015)
-- [ ] **NF-040** `[cli]` Batchrunner som kör strategier × scenarier × seeds och skriver CSV och JSON. (M, beror på NF-015)
 - [ ] **NF-050** `[api]` SignalR-ström av simuleringstillstånd. (M, beror på NF-010)
 - [ ] **NF-051** `[api]` Endpoints för att lista och läsa layouter, produkter och scenarier. (S)
 - [ ] **NF-060** `[web]` Visare i React eller Angular som ritar kartan från layoutfilen. (L, beror på NF-050)
@@ -140,6 +132,11 @@ _Inget pågår just nu._
 - [x] **NF-002** `[docs]` Repostruktur, README och PR-dokumentation.
 - [x] **NF-003** `[data]` Första versionen av layout-, produkt- och scenarioformat för möbelfabriken.
 - [x] **NF-004** `[core]` `PathFinder` (kortaste väg, blockerade segment), `IDispatchStrategy` och tre strategier, med tester.
+- [x] **NF-005** `[ci]` Kör `dotnet build` och `dotnet test` och rätta det som inte kompilerar.
+- [x] **NF-010** `[core]` Simuleringsmotor med fast tidssteg och deterministisk slumpgenerator, portad från prototypen. `SimulationEngine`, `Rng`.
+- [x] **NF-011** `[core]` Truckens tillståndsmaskin: ledig, till hämtning, lastar, levererar, lossar, parkerar.
+- [x] **NF-012** `[core]` Skapa order ur produktmix och arbetsplan, med val mellan alternativa stationer (Montering A eller B).
+- [x] **NF-015** `[core]` Mätvärden: tomkörning, snittväntan, sträcka, kö, utnyttjande, levererade order. `SimulationMetrics`.
 
 ## Arbetssätt
 

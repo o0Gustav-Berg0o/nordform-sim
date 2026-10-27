@@ -14,7 +14,8 @@ public sealed record Layout(
     IReadOnlyList<Node> Nodes,
     IReadOnlyList<Edge> Edges,
     IReadOnlyList<Station> Stations,
-    double MetersPerUnit = 0.1);
+    double MetersPerUnit = 0.1,
+    IReadOnlyList<string>? ParkingNodes = null);
 
 /// <summary>Ett steg i en arbetsplan. Anges per stationstyp, inte per enskild station.</summary>
 public sealed record RoutingStep(string StationKind, double? ProcessSeconds = null);
