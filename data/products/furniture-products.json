@@ -1,0 +1,110 @@
+[
+  {
+    "id": "chair",
+    "name": "Stol",
+    "routing": [
+      {
+        "stationKind": "receiving"
+      },
+      {
+        "stationKind": "rawstore"
+      },
+      {
+        "stationKind": "saw"
+      },
+      {
+        "stationKind": "planer"
+      },
+      {
+        "stationKind": "cnc"
+      },
+      {
+        "stationKind": "sander"
+      },
+      {
+        "stationKind": "paint"
+      },
+      {
+        "stationKind": "buffer"
+      },
+      {
+        "stationKind": "assembly"
+      },
+      {
+        "stationKind": "qc"
+      },
+      {
+        "stationKind": "pack"
+      },
+      {
+        "stationKind": "finished"
+      }
+    ]
+  },
+  {
+    "id": "table",
+    "name": "Bord",
+    "routing": [
+      {
+        "stationKind": "receiving"
+      },
+      {
+        "stationKind": "rawstore"
+      },
+      {
+        "stationKind": "saw"
+      },
+      {
+        "stationKind": "planer"
+      },
+      {
+        "stationKind": "sander"
+      },
+      {
+        "stationKind": "paint"
+      },
+      {
+        "stationKind": "buffer"
+      },
+      {
+        "stationKind": "assembly"
+      },
+      {
+        "stationKind": "qc"
+      },
+      {
+        "stationKind": "pack"
+      },
+      {
+        "stationKind": "finished"
+      }
+    ]
+  },
+  {
+    "id": "bookcase",
+    "name": "Bokhylla, obehandlad",
+    "routing": [
+      {
+        "stationKind": "receiving"
+      },
+      {
+        "stationKind": "rawstore"
+      },
+      {
+        "stationKind": "saw"
+      },
+      {
+        "stationKind": "cnc"
+      },
+      {
+        "stationKind": "assembly"
+      },
+      {
+        "stationKind": "pack"
+      },
+      {
+        "stationKind": "finished"
+      }
+    ]
+  }
+]

@@ -1,0 +1,356 @@
+{
+  "name": "Nordform Möbler, huvudfabrik",
+  "metersPerUnit": 0.1,
+  "nodes": [
+    {
+      "id": "GODS",
+      "x": 120,
+      "y": 330
+    },
+    {
+      "id": "RAV",
+      "x": 200,
+      "y": 330
+    },
+    {
+      "id": "J1",
+      "x": 251,
+      "y": 330
+    },
+    {
+      "id": "SAG",
+      "x": 335,
+      "y": 330
+    },
+    {
+      "id": "BUF",
+      "x": 385,
+      "y": 330
+    },
+    {
+      "id": "HYV",
+      "x": 495,
+      "y": 330
+    },
+    {
+      "id": "MONA",
+      "x": 535,
+      "y": 330
+    },
+    {
+      "id": "J2",
+      "x": 600,
+      "y": 330
+    },
+    {
+      "id": "CNC",
+      "x": 680,
+      "y": 330
+    },
+    {
+      "id": "MONB",
+      "x": 720,
+      "y": 330
+    },
+    {
+      "id": "SLIP",
+      "x": 825,
+      "y": 330
+    },
+    {
+      "id": "KVAL",
+      "x": 850,
+      "y": 330
+    },
+    {
+      "id": "J3",
+      "x": 901,
+      "y": 330
+    },
+    {
+      "id": "PACK",
+      "x": 975,
+      "y": 330
+    },
+    {
+      "id": "LACK",
+      "x": 1020,
+      "y": 330
+    },
+    {
+      "id": "FARD",
+      "x": 1100,
+      "y": 330
+    },
+    {
+      "id": "T1",
+      "x": 251,
+      "y": 34
+    },
+    {
+      "id": "T2",
+      "x": 600,
+      "y": 34
+    },
+    {
+      "id": "T3",
+      "x": 901,
+      "y": 34
+    },
+    {
+      "id": "B1",
+      "x": 251,
+      "y": 698
+    },
+    {
+      "id": "B2",
+      "x": 600,
+      "y": 698
+    },
+    {
+      "id": "B3",
+      "x": 901,
+      "y": 698
+    },
+    {
+      "id": "P0",
+      "x": 120,
+      "y": 698
+    },
+    {
+      "id": "P1",
+      "x": 104,
+      "y": 698
+    },
+    {
+      "id": "P2",
+      "x": 88,
+      "y": 698
+    },
+    {
+      "id": "P3",
+      "x": 72,
+      "y": 698
+    },
+    {
+      "id": "P4",
+      "x": 56,
+      "y": 698
+    }
+  ],
+  "edges": [
+    {
+      "from": "GODS",
+      "to": "RAV"
+    },
+    {
+      "from": "RAV",
+      "to": "J1"
+    },
+    {
+      "from": "J1",
+      "to": "SAG"
+    },
+    {
+      "from": "SAG",
+      "to": "BUF"
+    },
+    {
+      "from": "BUF",
+      "to": "HYV"
+    },
+    {
+      "from": "HYV",
+      "to": "MONA"
+    },
+    {
+      "from": "MONA",
+      "to": "J2"
+    },
+    {
+      "from": "J2",
+      "to": "CNC"
+    },
+    {
+      "from": "CNC",
+      "to": "MONB"
+    },
+    {
+      "from": "MONB",
+      "to": "SLIP"
+    },
+    {
+      "from": "SLIP",
+      "to": "KVAL"
+    },
+    {
+      "from": "KVAL",
+      "to": "J3"
+    },
+    {
+      "from": "J3",
+      "to": "PACK"
+    },
+    {
+      "from": "PACK",
+      "to": "LACK"
+    },
+    {
+      "from": "LACK",
+      "to": "FARD"
+    },
+    {
+      "from": "T1",
+      "to": "J1"
+    },
+    {
+      "from": "J1",
+      "to": "B1"
+    },
+    {
+      "from": "T2",
+      "to": "J2"
+    },
+    {
+      "from": "J2",
+      "to": "B2"
+    },
+    {
+      "from": "T3",
+      "to": "J3"
+    },
+    {
+      "from": "J3",
+      "to": "B3"
+    },
+    {
+      "from": "T1",
+      "to": "T2"
+    },
+    {
+      "from": "T2",
+      "to": "T3"
+    },
+    {
+      "from": "B1",
+      "to": "B2"
+    },
+    {
+      "from": "B2",
+      "to": "B3"
+    },
+    {
+      "from": "P0",
+      "to": "B1"
+    },
+    {
+      "from": "P1",
+      "to": "P0"
+    },
+    {
+      "from": "P2",
+      "to": "P1"
+    },
+    {
+      "from": "P3",
+      "to": "P2"
+    },
+    {
+      "from": "P4",
+      "to": "P3"
+    }
+  ],
+  "stations": [
+    {
+      "id": "GODS",
+      "name": "Godsmottagning",
+      "kind": "receiving",
+      "node": "GODS",
+      "processSeconds": 8
+    },
+    {
+      "id": "RAV",
+      "name": "Råvarulager",
+      "kind": "rawstore",
+      "node": "RAV",
+      "processSeconds": 20
+    },
+    {
+      "id": "SAG",
+      "name": "Sågning",
+      "kind": "saw",
+      "node": "SAG",
+      "processSeconds": 25
+    },
+    {
+      "id": "HYV",
+      "name": "Hyvling",
+      "kind": "planer",
+      "node": "HYV",
+      "processSeconds": 20
+    },
+    {
+      "id": "CNC",
+      "name": "Fräs & CNC",
+      "kind": "cnc",
+      "node": "CNC",
+      "processSeconds": 30
+    },
+    {
+      "id": "SLIP",
+      "name": "Slipning",
+      "kind": "sander",
+      "node": "SLIP",
+      "processSeconds": 18
+    },
+    {
+      "id": "LACK",
+      "name": "Lackering",
+      "kind": "paint",
+      "node": "LACK",
+      "processSeconds": 40
+    },
+    {
+      "id": "BUF",
+      "name": "Torkbuffert",
+      "kind": "buffer",
+      "node": "BUF",
+      "processSeconds": 55
+    },
+    {
+      "id": "MONA",
+      "name": "Montering A",
+      "kind": "assembly",
+      "node": "MONA",
+      "processSeconds": 35
+    },
+    {
+      "id": "MONB",
+      "name": "Montering B",
+      "kind": "assembly",
+      "node": "MONB",
+      "processSeconds": 35
+    },
+    {
+      "id": "KVAL",
+      "name": "Kvalitet",
+      "kind": "qc",
+      "node": "KVAL",
+      "processSeconds": 12
+    },
+    {
+      "id": "PACK",
+      "name": "Packning",
+      "kind": "pack",
+      "node": "PACK",
+      "processSeconds": 18
+    },
+    {
+      "id": "FARD",
+      "name": "Färdigvaror",
+      "kind": "finished",
+      "node": "FARD",
+      "processSeconds": 15
+    }
+  ]
+}

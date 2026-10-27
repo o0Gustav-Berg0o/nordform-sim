@@ -1,0 +1,685 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Nordform Fabrikskarta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: kartan som huvudyta, mätvärden och jämförelse i en smal kolumn bredvid.
+   Palett: neutral betonggrå yta, varningsgult för truckar, en zonfärg per produktionstyp. */
+:root{
+  --bg:#E9EBE7; --panel:#F6F7F4; --ink:#1B2225; --muted:#586266; --line:#C6CBC6;
+  --floor:#DADED8; --aisle:#F3F4F0; --wall:#2C363A; --dash:#AEB6AE;
+  --accent:#E3A600; --accent-ink:#1B2225; --bad:#C23A2B; --good:#2F7D5A; --heat:#D2561F;
+  --z-log:#D3D8DB; --z-mach:#C6D3E2; --z-fin:#C5DBD3; --z-asm:#E4D7BC; --z-pack:#D9D3E3;
+  --mach:#66747A; --mfill:#EEF0EC; --wood:#B98A4E;
+  --ff-label:'Barlow Condensed','Arial Narrow',sans-serif;
+  --ff-body:'IBM Plex Sans',system-ui,sans-serif;
+  --ff-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101517; --panel:#192023; --ink:#E5E9E6; --muted:#8C989C; --line:#2C373B;
+    --floor:#1C2427; --aisle:#2A3438; --wall:#7C898D; --dash:#46545A;
+    --accent:#F0B400; --accent-ink:#1B2225; --bad:#E5604E; --good:#4FB486; --heat:#FF8A4C;
+    --z-log:#222B31; --z-mach:#1F2D3C; --z-fin:#1E3430; --z-asm:#382F22; --z-pack:#2B2838;
+    --mach:#8FA0A6; --mfill:#263035; --wood:#A57A44;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101517; --panel:#192023; --ink:#E5E9E6; --muted:#8C989C; --line:#2C373B;
+  --floor:#1C2427; --aisle:#2A3438; --wall:#7C898D; --dash:#46545A;
+  --accent:#F0B400; --accent-ink:#1B2225; --bad:#E5604E; --good:#4FB486; --heat:#FF8A4C;
+  --z-log:#222B31; --z-mach:#1F2D3C; --z-fin:#1E3430; --z-asm:#382F22; --z-pack:#2B2838;
+  --mach:#8FA0A6; --mfill:#263035; --wood:#A57A44;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{
+  background:var(--bg);color:var(--ink);font:14px/1.45 var(--ff-body);
+  padding-block:20px 28px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+.app{max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+h1{margin:0;font:700 30px/1 var(--ff-label);letter-spacing:.04em;text-transform:uppercase}
+.sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+.mono{font-family:var(--ff-mono)}
+.seed{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:4px 8px;border-radius:3px;background:var(--panel)}
+
+.bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;background:var(--panel);border:1px solid var(--line);padding:10px 12px;border-radius:4px}
+.ctl{display:flex;gap:6px;align-items:center}
+.btn,.seg button{
+  font:500 13px var(--ff-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);
+  padding:7px 12px;border-radius:3px;cursor:pointer;min-height:34px
+}
+.btn:hover,.seg button:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn[aria-pressed="true"]{background:var(--bad);border-color:var(--bad);color:#fff}
+.seg{display:flex}
+.seg button{border-radius:0;margin-left:-1px}
+.seg button:first-child{border-radius:3px 0 0 3px;margin-left:0}
+.seg button:last-child{border-radius:0 3px 3px 0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);position:relative}
+.fld{display:flex;flex-direction:column;gap:3px;font:600 11px var(--ff-label);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+select{font:400 13px var(--ff-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:6px 8px;min-height:34px;max-width:100%}
+.chk{display:flex;gap:6px;align-items:center;min-height:34px;font-size:13px}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;align-items:start}
+@media (max-width:1020px){.grid{grid-template-columns:minmax(0,1fr)}}
+.mapcard{background:var(--panel);border:1px solid var(--line);border-radius:4px;min-width:0}
+.mapwrap{overflow-x:auto}
+#map{display:block;width:100%;min-width:780px;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;padding:10px 12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border:1px solid var(--wall);display:inline-block;border-radius:2px}
+.sw.t{background:var(--accent)}
+.sw.p{background:var(--wood);width:11px;height:11px}
+.sw.u{background:var(--wood);border:2px solid var(--bad);width:11px;height:11px}
+.sw.b{background:repeating-linear-gradient(45deg,var(--bad) 0 2px,transparent 2px 5px);border-color:var(--bad)}
+
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:12px;min-width:0}
+.card h2{margin:0 0 10px;font:600 13px var(--ff-label);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.kpi{background:var(--panel);padding:8px 10px;min-width:0}
+.kpi b{display:block;font:500 20px/1.2 var(--ff-mono);font-variant-numeric:tabular-nums}
+.kpi span{font-size:11px;color:var(--muted)}
+.trucks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.trucks li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:2px 8px;align-items:center}
+.trucks .id{font:600 12px var(--ff-mono);background:var(--accent);color:var(--accent-ink);text-align:center;padding:2px 0;border-radius:2px;grid-row:span 2}
+.trucks .st{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meter{height:4px;background:var(--line);border-radius:2px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--good);width:0}
+.log{list-style:none;margin:0;padding:0;font:12px/1.5 var(--ff-mono);color:var(--muted);display:flex;flex-direction:column;gap:2px;min-height:12em}
+.log li{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.log b{color:var(--ink);font-weight:500}
+.cmp{width:100%;border-collapse:collapse;font-size:12px}
+.cmp th{font:600 11px var(--ff-label);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:right;padding:4px 4px;border-bottom:1px solid var(--line)}
+.cmp th:first-child,.cmp td:first-child{text-align:left}
+.cmp td{padding:6px 4px;text-align:right;font-family:var(--ff-mono);font-variant-numeric:tabular-nums;border-bottom:1px solid var(--line)}
+.cmp td:first-child{font-family:var(--ff-body)}
+.cmp tr.best td{color:var(--good);font-weight:600}
+.note{margin:8px 0 0;font-size:12px;color:var(--muted)}
+.cmpwrap{overflow-x:auto}
+
+/* karta */
+.floor{fill:var(--floor);stroke:var(--wall);stroke-width:3}
+.aisle{fill:var(--aisle)}
+.cl{stroke:var(--dash);stroke-width:1.2;stroke-dasharray:8 8;fill:none}
+.room{stroke:var(--wall);stroke-width:2}
+.z-log{fill:var(--z-log)}.z-mach{fill:var(--z-mach)}.z-fin{fill:var(--z-fin)}.z-asm{fill:var(--z-asm)}.z-pack{fill:var(--z-pack)}
+.mach{fill:var(--mfill);stroke:var(--mach);stroke-width:1}
+.cab{fill:var(--mach);opacity:.55}
+.rack{fill:url(#rackpat);stroke:var(--mach);stroke-width:1}
+.rp{stroke:var(--mach);stroke-width:1}
+.bay{fill:none;stroke:var(--mach);stroke-width:1;stroke-dasharray:4 3}
+.conv{fill:var(--mfill);stroke:var(--mach);stroke-width:1;stroke-dasharray:3 3}
+.rlabel{font:600 14px var(--ff-label);letter-spacing:.08em;fill:var(--ink)}
+.wipb{font:500 10px var(--ff-mono);fill:var(--muted)}
+.wipb.hot{fill:var(--bad);font-weight:600}
+.dock{stroke:var(--accent);stroke-width:3;stroke-linecap:round}
+.dot{fill:var(--accent);stroke:var(--ink);stroke-width:1}
+.pm{fill:var(--wood);stroke:var(--ink);stroke-width:.8}
+.heat{stroke:var(--heat);stroke-width:14;stroke-linecap:round;opacity:0;fill:none}
+.bay-door{fill:var(--mfill);stroke:var(--wall);stroke-width:1.5}
+.small{font:500 9px var(--ff-mono);fill:var(--muted)}
+.tb{fill:var(--accent);stroke:var(--ink);stroke-width:1.2}
+.tg{fill:none;stroke:var(--ink);stroke-width:1.2}
+.fk{fill:var(--ink)}
+.pl{fill:var(--wood);stroke:var(--ink);stroke-width:1}
+.pl.urgent{stroke:var(--bad);stroke-width:2}
+.tl{font:600 9px var(--ff-mono);fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--aisle);stroke-width:3px}
+.truck.dim{opacity:.6}
+.blk{fill:url(#hatch);stroke:var(--bad);stroke-width:1.5}
+.hp{stroke:var(--bad);stroke-width:2}
+.btxt{font:700 10px var(--ff-label);letter-spacing:.1em;fill:var(--bad);text-anchor:middle}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div>
+      <h1>Nordform Möbler</h1>
+      <p class="sub">Fabrikskarta och transportsimulering. Fiktivt företag, syntetisk data.</p>
+    </div>
+    <div class="seed mono" id="seedLabel">Seed 4217</div>
+  </header>
+
+  <section class="bar" aria-label="Styrning av simuleringen">
+    <div class="ctl">
+      <button id="play" class="btn primary" type="button">Paus</button>
+      <button id="reset" class="btn" type="button">Starta om</button>
+    </div>
+    <div class="fld">Hastighet
+      <div class="seg" role="group" aria-label="Hastighet">
+        <button type="button" data-sp="2" aria-pressed="false">2×</button>
+        <button type="button" data-sp="4" aria-pressed="true">4×</button>
+        <button type="button" data-sp="8" aria-pressed="false">8×</button>
+        <button type="button" data-sp="16" aria-pressed="false">16×</button>
+      </div>
+    </div>
+    <label class="fld" for="scn">Scenario
+      <select id="scn">
+        <option value="50">Normal dag</option>
+        <option value="26">Hög belastning</option>
+        <option value="90">Låg belastning</option>
+      </select>
+    </label>
+    <label class="fld" for="strat">Planering
+      <select id="strat">
+        <option value="fifo">Äldsta uppdrag först</option>
+        <option value="nearest">Närmaste uppdrag</option>
+        <option value="prio">Brådskande först, sedan närmast</option>
+      </select>
+    </label>
+    <button id="blk" class="btn" type="button" aria-pressed="false">Blockera korridor vid Fräs &amp; CNC</button>
+    <label class="chk" for="heat"><input type="checkbox" id="heat"> Trafikvärme</label>
+  </section>
+
+  <div class="grid">
+    <section class="mapcard" aria-label="Karta över fabriken">
+      <div class="mapwrap"><svg id="map" viewBox="0 0 1200 744" role="img" aria-label="Planritning över Nordform Möbler med hallar, korridorer och truckar"></svg></div>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--z-log)"></i>Lager</span>
+        <span><i class="sw" style="background:var(--z-mach)"></i>Bearbetning</span>
+        <span><i class="sw" style="background:var(--z-fin)"></i>Ytbehandling</span>
+        <span><i class="sw" style="background:var(--z-asm)"></i>Montering</span>
+        <span><i class="sw" style="background:var(--z-pack)"></i>Kontroll och packning</span>
+        <span><i class="sw t"></i>Truck</span>
+        <span><i class="sw p"></i>Pall</span>
+        <span><i class="sw u"></i>Brådskande pall</span>
+        <span><i class="sw b"></i>Blockerad korridor</span>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="card" aria-label="Mätvärden">
+        <h2>Mätvärden</h2>
+        <div class="kpis" id="kpis"></div>
+      </section>
+      <section class="card" aria-label="Truckar">
+        <h2>Truckar</h2>
+        <ul class="trucks" id="trucks"></ul>
+      </section>
+      <section class="card" aria-label="Jämförelse mellan planeringsmetoder">
+        <h2>Jämför planering</h2>
+        <button id="bench" class="btn" type="button">Kör alla tre (30 min)</button>
+        <div class="cmpwrap" id="cmpwrap" hidden>
+          <table class="cmp">
+            <thead><tr><th>Metod</th><th>Tomk.</th><th>Väntan</th><th>Order</th><th>Sträcka</th></tr></thead>
+            <tbody id="cmpbody"></tbody>
+          </table>
+        </div>
+        <p class="note" id="cmpnote">Samma seed, scenario och korridorläge för alla metoder. Bästa snittväntetid markeras grönt.</p>
+      </section>
+      <section class="card" aria-label="Händelser">
+        <h2>Händelser</h2>
+        <ul class="log" id="log"></ul>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var DT=0.1, SPEED=40, SCALE=0.1, SEED=4217, NTRUCK=5, PREWARM=240;
+
+var NAMES={GODS:'Godsmottagning',RAV:'Råvarulager',SAG:'Sågning',HYV:'Hyvling',CNC:'Fräs & CNC',SLIP:'Slipning',LACK:'Lackering',BUF:'Torkbuffert',MONA:'Montering A',MONB:'Montering B',KVAL:'Kvalitet',PACK:'Packning',FARD:'Färdigvaror'};
+var PROC={GODS:8,RAV:20,SAG:25,HYV:20,CNC:30,SLIP:18,LACK:40,BUF:55,MONA:35,MONB:35,KVAL:12,PACK:18,FARD:15};
+var ROUTE=['GODS','RAV','SAG','HYV','CNC','SLIP','LACK','BUF','MON','KVAL','PACK','FARD'];
+
+/* ---------- graf över korridorer ---------- */
+var nodes={};
+function addNode(id,x,y){nodes[id]={id:id,x:x,y:y};}
+[['GODS',120],['RAV',200],['J1',251],['SAG',335],['BUF',385],['HYV',495],['MONA',535],['J2',600],['CNC',680],['MONB',720],['SLIP',825],['KVAL',850],['J3',901],['PACK',975],['LACK',1020],['FARD',1100]].forEach(function(a){addNode(a[0],a[1],330);});
+addNode('T1',251,34);addNode('T2',600,34);addNode('T3',901,34);
+addNode('B1',251,698);addNode('B2',600,698);addNode('B3',901,698);
+for(var pi=0;pi<NTRUCK;pi++)addNode('P'+pi,120-16*pi,698);
+var EDGES=[['GODS','RAV'],['RAV','J1'],['J1','SAG'],['SAG','BUF'],['BUF','HYV'],['HYV','MONA'],['MONA','J2'],['J2','CNC'],['CNC','MONB'],['MONB','SLIP'],['SLIP','KVAL'],['KVAL','J3'],['J3','PACK'],['PACK','LACK'],['LACK','FARD'],
+ ['T1','J1'],['J1','B1'],['T2','J2'],['J2','B2'],['T3','J3'],['J3','B3'],['T1','T2'],['T2','T3'],['B1','B2'],['B2','B3'],['P0','B1'],['P1','P0'],['P2','P1'],['P3','P2'],['P4','P3']];
+var ids=Object.keys(nodes);
+function ekey(a,b){return a<b?a+'~'+b:b+'~'+a;}
+var adj={};ids.forEach(function(i){adj[i]=[];});
+EDGES.forEach(function(e){
+  var a=e[0],b=e[1],w=Math.hypot(nodes[a].x-nodes[b].x,nodes[a].y-nodes[b].y),k=ekey(a,b);
+  adj[a].push([b,w,k]);adj[b].push([a,w,k]);
+});
+var BLOCK_KEY=ekey('J2','CNC');
+var rcache={};
+function route(a,b,blocked){
+  var ck=a+'>'+b+'|'+blocked.join(',');
+  if(rcache[ck]!==undefined)return rcache[ck];
+  var dist={},prev={},done={};
+  ids.forEach(function(i){dist[i]=Infinity;});
+  dist[a]=0;
+  for(;;){
+    var u=null,best=Infinity;
+    for(var q=0;q<ids.length;q++){var i=ids[q];if(!done[i]&&dist[i]<best){best=dist[i];u=i;}}
+    if(u===null||u===b)break;
+    done[u]=1;
+    var nb=adj[u];
+    for(var j=0;j<nb.length;j++){
+      var v=nb[j][0],w=nb[j][1],k=nb[j][2];
+      if(blocked.indexOf(k)>=0)continue;
+      if(dist[u]+w<dist[v]){dist[v]=dist[u]+w;prev[v]=u;}
+    }
+  }
+  var res=null;
+  if(dist[b]<Infinity){var p=[],c=b;while(c!==a){p.unshift(c);c=prev[c];}res={path:p,dist:dist[b]};}
+  rcache[ck]=res;
+  return res;
+}
+
+/* ---------- slumptal med fast seed ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+/* ---------- simuleringen ---------- */
+function Sim(o){
+  this.seed=o.seed;this.interval=o.interval;this.strategy=o.strategy;
+  this.blocked=(o.blocked||[]).slice();this.onLog=o.onLog||function(){};
+  this.reset();
+}
+Sim.prototype.reset=function(){
+  this.t=0;this.rand=mulberry32(this.seed);this.nextSpawn=3;this.pid=0;this.jid=0;
+  this.pallets=[];this.jobs=[];this.wip={};
+  for(var k in NAMES)this.wip[k]=0;
+  this.emptyD=0;this.loadedD=0;this.waitSum=0;this.waitN=0;this.shipped=0;this.done=0;
+  this.edgeUse={};
+  this.trucks=[];
+  for(var i=0;i<NTRUCK;i++){
+    var n=nodes['P'+i];
+    this.trucks.push({id:i,x:n.x,y:n.y,node:'P'+i,home:'P'+i,path:[],dest:'P'+i,state:'idle',job:null,timer:0,idle:0,busy:0,hx:1,hy:0});
+  }
+};
+Sim.prototype.pickMon=function(){
+  var a=this.wip.MONA,b=this.wip.MONB;
+  this.jobs.forEach(function(j){if(j.to==='MONA')a++;else if(j.to==='MONB')b++;});
+  if(a<b)return 'MONA';
+  if(b<a)return 'MONB';
+  return this.rand()<0.5?'MONA':'MONB';
+};
+Sim.prototype.procTime=function(id){return PROC[id]*(0.8+0.4*this.rand());};
+Sim.prototype.spawn=function(){
+  var p={id:++this.pid,urgent:this.rand()<0.12,i:0,at:'GODS',state:'proc',readyAt:0};
+  p.readyAt=this.t+this.procTime('GODS');
+  this.wip.GODS++;
+  this.pallets.push(p);
+};
+Sim.prototype.palletReady=function(p){
+  if(ROUTE[p.i]==='FARD'){p.state='gone';this.wip.FARD--;this.shipped++;return;}
+  var next=ROUTE[p.i+1];
+  if(next==='MON')next=this.pickMon();
+  this.jobs.push({id:++this.jid,pallet:p,from:p.at,to:next,created:this.t,urgent:p.urgent,assigned:false});
+  p.state='wait';
+};
+Sim.prototype.setPath=function(tr,dest){
+  var r;
+  if(tr.path.length>0){
+    var anchor=tr.path[0];
+    r=route(anchor,dest,this.blocked);
+    if(!r)return false;
+    tr.path=[anchor].concat(r.path);
+  }else{
+    r=route(tr.node,dest,this.blocked);
+    if(!r)return false;
+    tr.path=r.path.slice();
+  }
+  tr.dest=dest;
+  return true;
+};
+Sim.prototype.setBlocked=function(list){
+  this.blocked=list.slice();
+  var self=this;
+  this.trucks.forEach(function(tr){
+    if(tr.path.length>0&&(tr.state==='toPickup'||tr.state==='toDrop'||tr.state==='parking'))self.setPath(tr,tr.dest);
+  });
+};
+Sim.prototype.tryAssign=function(tr){
+  var cand=this.jobs.filter(function(j){return !j.assigned;});
+  if(!cand.length)return;
+  var anchor,extra=0;
+  if(tr.path.length>0){anchor=tr.path[0];extra=Math.hypot(nodes[anchor].x-tr.x,nodes[anchor].y-tr.y);}
+  else anchor=tr.node;
+  var self=this,scored=[];
+  cand.forEach(function(j){
+    var r=route(anchor,j.from,self.blocked);
+    if(!r)return;
+    var d=extra+r.dist,s;
+    if(self.strategy==='fifo')s=j.created;
+    else if(self.strategy==='nearest')s=d;
+    else s=(j.urgent?0:1e6)+d;
+    scored.push([s,j]);
+  });
+  if(!scored.length)return;
+  scored.sort(function(a,b){return a[0]-b[0];});
+  var job=scored[0][1];
+  job.assigned=true;tr.job=job;
+  this.setPath(tr,job.from);
+  tr.state='toPickup';tr.idle=0;
+};
+Sim.prototype.move=function(tr,dt){
+  var rem=SPEED*dt,loaded=tr.state==='toDrop';
+  while(rem>0&&tr.path.length){
+    var n=nodes[tr.path[0]],dx=n.x-tr.x,dy=n.y-tr.y,d=Math.hypot(dx,dy);
+    if(d>0.001){tr.hx=dx;tr.hy=dy;}
+    var step=Math.min(d,rem);
+    if(d<=rem){
+      tr.x=n.x;tr.y=n.y;
+      var prev=tr.node;tr.node=tr.path.shift();
+      if(prev!==tr.node){var k=ekey(prev,tr.node);this.edgeUse[k]=(this.edgeUse[k]||0)+1;}
+    }else{tr.x+=dx/d*rem;tr.y+=dy/d*rem;}
+    if(loaded)this.loadedD+=step;else this.emptyD+=step;
+    rem-=step;
+  }
+};
+Sim.prototype.arrive=function(tr){
+  if(tr.state==='toPickup'){
+    tr.state='loading';tr.timer=2;
+    this.waitSum+=this.t-tr.job.created;this.waitN++;
+  }else if(tr.state==='toDrop'){
+    tr.state='unloading';tr.timer=2;
+  }else if(tr.state==='parking'){
+    tr.state='idle';
+  }
+};
+Sim.prototype.updateTruck=function(tr,dt){
+  var s=tr.state;
+  if(s==='idle'||s==='parking')this.tryAssign(tr);
+  if(tr.state==='idle'){
+    tr.idle+=dt;
+    if(tr.idle>45&&tr.node!==tr.home){
+      if(this.setPath(tr,tr.home))tr.state='parking';
+    }
+  }
+  if(tr.state==='toPickup'||tr.state==='toDrop'||tr.state==='parking'){
+    this.move(tr,dt);
+    if(tr.path.length===0){
+      if(tr.node===tr.dest)this.arrive(tr);
+      else this.setPath(tr,tr.dest);
+    }
+  }else if(tr.state==='loading'){
+    tr.timer-=dt;
+    if(tr.timer<=0){
+      var j=tr.job;
+      j.pallet.state='carried';
+      this.wip[j.from]--;
+      this.jobs.splice(this.jobs.indexOf(j),1);
+      this.onLog(this.t,'T'+(tr.id+1)+' hämtar P'+j.pallet.id+(j.urgent?' (brådskande)':'')+' vid '+NAMES[j.from]);
+      tr.state='toDrop';
+      if(!this.setPath(tr,j.to))tr.dest=j.to;
+    }
+  }else if(tr.state==='unloading'){
+    tr.timer-=dt;
+    if(tr.timer<=0){
+      var jb=tr.job,p=jb.pallet;
+      p.at=jb.to;p.i++;p.state='proc';
+      p.readyAt=this.t+this.procTime(jb.to);
+      this.wip[jb.to]++;this.done++;
+      this.onLog(this.t,'T'+(tr.id+1)+' lämnar P'+p.id+' vid '+NAMES[jb.to]);
+      tr.job=null;tr.state='idle';tr.idle=0;
+    }
+  }
+  if(tr.state!=='idle'&&tr.state!=='parking')tr.busy+=dt;
+};
+Sim.prototype.step=function(dt){
+  this.t+=dt;
+  while(this.t>=this.nextSpawn){this.spawn();this.nextSpawn+=this.interval*(0.7+0.6*this.rand());}
+  for(var i=0;i<this.pallets.length;i++){
+    var p=this.pallets[i];
+    if(p.state==='proc'&&this.t>=p.readyAt)this.palletReady(p);
+  }
+  for(var q=0;q<this.trucks.length;q++)this.updateTruck(this.trucks[q],dt);
+  if(this.pallets.length&&this.pallets.some(function(p){return p.state==='gone';}))
+    this.pallets=this.pallets.filter(function(p){return p.state!=='gone';});
+};
+Sim.prototype.kpi=function(){
+  var tot=this.emptyD+this.loadedD,busy=0;
+  this.trucks.forEach(function(t){busy+=t.busy;});
+  return{
+    emptyPct:tot?this.emptyD/tot*100:0,
+    wait:this.waitN?this.waitSum/this.waitN:0,
+    dist:tot*SCALE,shipped:this.shipped,done:this.done,queue:this.jobs.length,
+    util:this.t?busy/(this.t*this.trucks.length)*100:0
+  };
+};
+
+/* ---------- ritning ---------- */
+var ST=[
+ {id:'RAV',x:40,y:60,w:192,h:230,cat:'log',top:true,d:{k:'rack'}},
+ {id:'SAG',x:270,y:60,w:162,h:230,cat:'mach',top:true,d:{k:'mach',c:2,r:2}},
+ {id:'HYV',x:442,y:60,w:140,h:230,cat:'mach',top:true,d:{k:'mach',c:2,r:2}},
+ {id:'CNC',x:620,y:60,w:160,h:230,cat:'mach',top:true,d:{k:'mach',c:3,r:2}},
+ {id:'SLIP',x:790,y:60,w:92,h:230,cat:'mach',top:true,d:{k:'mach',c:1,r:3}},
+ {id:'LACK',x:920,y:60,w:240,h:230,cat:'fin',top:true,d:{k:'line'}},
+ {id:'GODS',x:40,y:370,w:192,h:300,cat:'log',top:false,d:{k:'bay'}},
+ {id:'BUF',x:270,y:370,w:162,h:300,cat:'log',top:false,d:{k:'rack'}},
+ {id:'MONA',x:442,y:370,w:140,h:300,cat:'asm',top:false,d:{k:'mach',c:2,r:3}},
+ {id:'MONB',x:620,y:370,w:160,h:300,cat:'asm',top:false,d:{k:'mach',c:2,r:3}},
+ {id:'KVAL',x:790,y:370,w:92,h:300,cat:'pack',top:false,d:{k:'mach',c:1,r:2}},
+ {id:'PACK',x:920,y:370,w:110,h:300,cat:'pack',top:false,d:{k:'mach',c:1,r:3}},
+ {id:'FARD',x:1040,y:370,w:120,h:300,cat:'log',top:false,d:{k:'rack'}}
+];
+function deco(s){
+  var x0=s.x+12,x1=s.x+s.w-12,y0=s.top?s.y+46:s.y+48,y1=s.top?s.y+s.h-46:s.y+s.h-46;
+  var w=x1-x0,h=y1-y0,o='',d=s.d,i,j;
+  if(d.k==='rack'){
+    var n=Math.floor((w+10)/26),ox=x0+(w-(n*26-10))/2;
+    for(i=0;i<n;i++)o+='<rect class="rack" x="'+(ox+i*26)+'" y="'+y0+'" width="16" height="'+h+'"/>';
+  }else if(d.k==='mach'){
+    var cw=w/d.c,ch=h/d.r;
+    for(i=0;i<d.c;i++)for(j=0;j<d.r;j++){
+      var mx=x0+i*cw+7,my=y0+j*ch+7,mw=cw-14,mh=ch-14;
+      o+='<rect class="mach" x="'+mx+'" y="'+my+'" width="'+mw+'" height="'+mh+'" rx="3"/><rect class="cab" x="'+(mx+4)+'" y="'+(my+4)+'" width="9" height="9" rx="1"/>';
+    }
+  }else if(d.k==='line'){
+    var bw=(w-16)/3;
+    for(i=0;i<3;i++)o+='<rect class="mach" x="'+(x0+i*(bw+8))+'" y="'+y0+'" width="'+bw+'" height="'+(h*0.5)+'" rx="3"/><rect class="cab" x="'+(x0+i*(bw+8)+6)+'" y="'+(y0+6)+'" width="9" height="9" rx="1"/>';
+    o+='<rect class="conv" x="'+x0+'" y="'+(y0+h*0.58)+'" width="'+w+'" height="12"/>';
+    o+='<rect class="mach" x="'+x0+'" y="'+(y0+h*0.58+22)+'" width="'+w+'" height="'+(h-(h*0.58+22))+'" rx="3"/>';
+  }else if(d.k==='bay'){
+    var bw2=w/3,bh=h/4;
+    for(i=0;i<3;i++)for(j=0;j<4;j++)o+='<rect class="bay" x="'+(x0+i*bw2+8)+'" y="'+(y0+j*bh+8)+'" width="'+(bw2-16)+'" height="'+(bh-16)+'"/>';
+  }
+  return o;
+}
+function build(){
+  var o='';
+  o+='<defs>'+
+   '<pattern id="rackpat" width="16" height="8" patternUnits="userSpaceOnUse"><line class="rp" x1="0" y1="0.5" x2="16" y2="0.5"/></pattern>'+
+   '<pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line class="hp" x1="0" y1="0" x2="0" y2="8"/></pattern>'+
+   '</defs>';
+  o+='<rect class="floor" x="10" y="10" width="1180" height="712" rx="4"/>';
+  o+='<g>';
+  o+='<rect class="aisle" x="24" y="296" width="1152" height="68"/>';
+  [251,600,901].forEach(function(x){o+='<rect class="aisle" x="'+(x-18)+'" y="16" width="36" height="700"/>';});
+  o+='<rect class="aisle" x="233" y="16" width="686" height="36"/>';
+  o+='<rect class="aisle" x="38" y="680" width="881" height="36"/>';
+  o+='</g>';
+  o+='<g id="heatL">'+EDGES.map(function(e){var a=nodes[e[0]],b=nodes[e[1]];return '<line class="heat" data-k="'+ekey(e[0],e[1])+'" x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'"/>';}).join('')+'</g>';
+  o+='<g>'+EDGES.map(function(e){var a=nodes[e[0]],b=nodes[e[1]];return '<line class="cl" x1="'+a.x+'" y1="'+a.y+'" x2="'+b.x+'" y2="'+b.y+'"/>';}).join('')+'</g>';
+  ST.forEach(function(s){
+    var nd=nodes[s.id],ey=s.top?s.y+s.h:s.y;
+    o+='<g><rect class="room z-'+s.cat+'" x="'+s.x+'" y="'+s.y+'" width="'+s.w+'" height="'+s.h+'" rx="2"/>'+deco(s);
+    var ly=s.top?s.y+22:s.y+s.h-12;
+    o+='<text class="rlabel" x="'+(s.x+10)+'" y="'+ly+'">'+NAMES[s.id].toUpperCase()+'</text>';
+    o+='<text class="wipb" id="wip-'+s.id+'" x="'+(s.x+10)+'" y="'+(s.top?ly+14:ly-15)+'">WIP 0</text>';
+    o+='<line class="dock" x1="'+nd.x+'" y1="'+ey+'" x2="'+nd.x+'" y2="'+nd.y+'"/><circle class="dot" cx="'+nd.x+'" cy="'+nd.y+'" r="3.5"/>';
+    o+='<g id="pm-'+s.id+'"></g></g>';
+  });
+  /* lastkajer */
+  for(var i=0;i<4;i++)o+='<rect class="bay-door" x="14" y="'+(400+i*58)+'" width="22" height="42" rx="2"/><text class="small" x="25" y="'+(425+i*58)+'" text-anchor="middle">IN '+(i+1)+'</text>';
+  for(var k=0;k<3;k++)o+='<rect class="bay-door" x="1164" y="'+(410+k*70)+'" width="22" height="52" rx="2"/><text class="small" x="1175" y="'+(440+k*70)+'" text-anchor="middle">UT '+(k+1)+'</text>';
+  o+='<text class="small" x="46" y="738">Laddstation</text>';
+  o+='<line x1="1000" y1="736" x2="1100" y2="736" stroke="var(--ink)" stroke-width="2"/><line x1="1000" y1="731" x2="1000" y2="741" stroke="var(--ink)" stroke-width="2"/><line x1="1100" y1="731" x2="1100" y2="741" stroke="var(--ink)" stroke-width="2"/><text class="small" x="1110" y="739">10 m</text>';
+  o+='<g id="blkL" hidden><rect class="blk" x="604" y="316" width="72" height="28"/><text class="btxt" x="640" y="334">BLOCKERAD</text></g>';
+  o+='<g id="trL">';
+  for(var t=0;t<NTRUCK;t++){
+    o+='<g class="truck" id="tr'+t+'"><g class="rot" id="rot'+t+'">'+
+      '<rect class="tb" x="-9" y="-5" width="14" height="10" rx="2"/><rect class="tg" x="-6" y="-4" width="8" height="8" rx="1"/>'+
+      '<rect class="fk" x="5" y="-5" width="2" height="10"/><rect class="fk" x="7" y="-4" width="8" height="2"/><rect class="fk" x="7" y="2" width="8" height="2"/>'+
+      '<rect class="pl" id="pl'+t+'" x="8" y="-5" width="9" height="10" hidden/></g>'+
+      '<text class="tl" y="-10">T'+(t+1)+'</text></g>';
+  }
+  o+='</g>';
+  document.getElementById('map').innerHTML=o;
+}
+build();
+
+/* ---------- styrning ---------- */
+var $=function(id){return document.getElementById(id);};
+var running=true,speed=4,acc=0,last=performance.now(),frameN=0;
+var heatOn=false,blockedOn=false;
+var logLines=[];
+function fmt(t){var h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=Math.floor(t%60);return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+function mmss(t){var m=Math.floor(t/60),s=Math.floor(t%60);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+function onLog(t,text){
+  logLines.unshift('<li><b>'+mmss(t)+'</b> '+text+'</li>');
+  if(logLines.length>9)logLines.pop();
+}
+var sim;
+function makeSim(){
+  logLines=[];
+  sim=new Sim({seed:SEED,interval:+$('scn').value,strategy:$('strat').value,blocked:blockedOn?[BLOCK_KEY]:[],onLog:onLog});
+  for(var i=0;i<PREWARM/DT;i++)sim.step(DT);
+  lastCount={};
+  vis=[];for(var t=0;t<NTRUCK;t++)vis.push({ang:0});
+}
+var lastCount={},vis=[];
+
+var KP=[['t','Simulerad tid'],['shipped','Levererade order'],['done','Transporter'],['empty','Tomkörning'],['wait','Snittväntan'],['dist','Körd sträcka'],['queue','Uppdrag i kö'],['util','Utnyttjande']];
+$('kpis').innerHTML=KP.map(function(k){return '<div class="kpi"><b id="k-'+k[0]+'">-</b><span>'+k[1]+'</span></div>';}).join('');
+$('trucks').innerHTML=Array.apply(null,Array(NTRUCK)).map(function(_,i){return '<li><span class="id">T'+(i+1)+'</span><span class="st" id="ts'+i+'">-</span><span class="meter"><i id="tm'+i+'"></i></span></li>';}).join('');
+
+function truckText(tr){
+  switch(tr.state){
+    case 'idle':return 'Ledig';
+    case 'parking':return 'Åker till laddstation';
+    case 'toPickup':return 'Till '+NAMES[tr.job.from];
+    case 'loading':return 'Lastar vid '+NAMES[tr.job.from];
+    case 'toDrop':return 'Levererar till '+NAMES[tr.job.to];
+    case 'unloading':return 'Lossar vid '+NAMES[tr.job.to];
+  }
+  return '';
+}
+function updatePanels(){
+  var k=sim.kpi();
+  $('k-t').textContent=fmt(sim.t);
+  $('k-shipped').textContent=k.shipped;
+  $('k-done').textContent=k.done;
+  $('k-empty').textContent=k.emptyPct.toFixed(0)+' %';
+  $('k-wait').textContent=k.wait.toFixed(0)+' s';
+  $('k-dist').textContent=(k.dist/1000).toFixed(2)+' km';
+  $('k-queue').textContent=k.queue;
+  $('k-util').textContent=k.util.toFixed(0)+' %';
+  sim.trucks.forEach(function(tr,i){
+    $('ts'+i).textContent=truckText(tr);
+    $('tm'+i).style.width=(sim.t?Math.min(100,tr.busy/sim.t*100):0)+'%';
+  });
+  $('log').innerHTML=logLines.join('');
+}
+function renderPallets(){
+  ST.forEach(function(s){
+    var n=sim.wip[s.id];
+    var el=$('wip-'+s.id);
+    el.textContent='WIP '+n;
+    el.setAttribute('class','wipb'+(n>=5?' hot':''));
+    var c=Math.min(n,8);
+    if(lastCount[s.id]===c)return;
+    lastCount[s.id]=c;
+    var nd=nodes[s.id],y=s.top?s.y+s.h-14:s.y+5,h='';
+    for(var i=0;i<c;i++)h+='<rect class="pm" x="'+(nd.x+(i-(c-1)/2)*11-4.5)+'" y="'+y+'" width="9" height="9" rx="1"/>';
+    $('pm-'+s.id).innerHTML=h;
+  });
+}
+function renderTrucks(dr){
+  sim.trucks.forEach(function(tr,i){
+    var v=vis[i],target=Math.atan2(tr.hy,tr.hx),moving=tr.state==='toPickup'||tr.state==='toDrop'||tr.state==='parking';
+    if(frameN===0)v.ang=target;
+    else if(moving){
+      var df=target-v.ang;while(df>Math.PI)df-=2*Math.PI;while(df<-Math.PI)df+=2*Math.PI;
+      v.ang+=df*Math.min(1,dr*14);
+    }
+    var ox=-Math.sin(v.ang)*4,oy=Math.cos(v.ang)*4;
+    $('tr'+i).setAttribute('transform','translate('+(tr.x+ox).toFixed(1)+','+(tr.y+oy).toFixed(1)+')');
+    $('rot'+i).setAttribute('transform','rotate('+(v.ang*180/Math.PI).toFixed(1)+')');
+    var carry=(tr.state==='toDrop'||tr.state==='unloading')&&tr.job;
+    var pl=$('pl'+i);
+    pl.hidden=!carry;
+    pl.setAttribute('class','pl'+(carry&&tr.job.urgent?' urgent':''));
+    $('tr'+i).setAttribute('class','truck'+(tr.state==='idle'||tr.state==='parking'?' dim':''));
+  });
+}
+function renderHeat(){
+  var mx=1,k;
+  for(k in sim.edgeUse)if(sim.edgeUse[k]>mx)mx=sim.edgeUse[k];
+  var ls=document.querySelectorAll('#heatL .heat');
+  for(var i=0;i<ls.length;i++){
+    var u=sim.edgeUse[ls[i].getAttribute('data-k')]||0;
+    ls[i].style.opacity=heatOn?(0.08+0.62*u/mx).toFixed(2):'0';
+  }
+}
+function render(dr){
+  renderTrucks(dr);
+  if(frameN%4===0){renderPallets();updatePanels();}
+  if(frameN%20===0)renderHeat();
+  frameN++;
+}
+function frame(now){
+  var dr=Math.min(0.1,(now-last)/1000);last=now;
+  if(running){acc+=dr*speed;while(acc>=DT){sim.step(DT);acc-=DT;}}
+  render(dr);
+  requestAnimationFrame(frame);
+}
+
+/* ---------- jämförelse ---------- */
+var STRATS=[['fifo','Äldsta först'],['nearest','Närmaste'],['prio','Brådskande först']];
+function runBench(){
+  var rows=[];
+  STRATS.forEach(function(s){
+    var sm=new Sim({seed:SEED,interval:+$('scn').value,strategy:s[0],blocked:blockedOn?[BLOCK_KEY]:[]});
+    for(var i=0;i<1800/DT;i++)sm.step(DT);
+    var k=sm.kpi();k.label=s[1];rows.push(k);
+  });
+  var best=Math.min.apply(null,rows.map(function(r){return r.wait;}));
+  $('cmpbody').innerHTML=rows.map(function(r){
+    return '<tr'+(r.wait===best?' class="best"':'')+'><td>'+r.label+'</td><td>'+r.emptyPct.toFixed(0)+' %</td><td>'+r.wait.toFixed(0)+' s</td><td>'+r.shipped+'</td><td>'+(r.dist/1000).toFixed(2)+' km</td></tr>';
+  }).join('');
+  $('cmpwrap').hidden=false;
+  $('cmpnote').textContent='Scenario "'+$('scn').options[$('scn').selectedIndex].text+'"'+(blockedOn?', korridor blockerad':'')+', 30 min simulerad tid, seed '+SEED+'. Bästa snittväntan är grön.';
+}
+
+/* ---------- händelser i gränssnittet ---------- */
+$('play').addEventListener('click',function(){running=!running;this.textContent=running?'Paus':'Spela';});
+$('reset').addEventListener('click',function(){makeSim();acc=0;});
+$('scn').addEventListener('change',function(){makeSim();acc=0;});
+$('strat').addEventListener('change',function(){makeSim();acc=0;});
+$('blk').addEventListener('click',function(){
+  blockedOn=!blockedOn;
+  this.setAttribute('aria-pressed',String(blockedOn));
+  this.textContent=blockedOn?'Öppna korridoren':'Blockera korridor vid Fräs & CNC';
+  $('blkL').hidden=!blockedOn;
+  sim.setBlocked(blockedOn?[BLOCK_KEY]:[]);
+});
+$('heat').addEventListener('change',function(){heatOn=this.checked;renderHeat();});
+$('bench').addEventListener('click',runBench);
+Array.prototype.forEach.call(document.querySelectorAll('.seg button'),function(b){
+  b.addEventListener('click',function(){
+    speed=+b.getAttribute('data-sp');
+    Array.prototype.forEach.call(document.querySelectorAll('.seg button'),function(x){x.setAttribute('aria-pressed',String(x===b));});
+  });
+});
+
+if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){running=false;$('play').textContent='Spela';}
+$('seedLabel').textContent='Seed '+SEED+' · deterministisk';
+makeSim();
+render(0.016);
+requestAnimationFrame(function(t){last=t;frame(t);});
+})();
+</script>
+</body></html>

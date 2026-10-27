@@ -1,0 +1,12 @@
+{
+  "name": "Hög belastning",
+  "seed": 4217,
+  "trucks": 5,
+  "orderIntervalSeconds": 26,
+  "durationSeconds": 1800,
+  "productMix": {
+    "chair": 0.5,
+    "table": 0.3,
+    "bookcase": 0.2
+  }
+}

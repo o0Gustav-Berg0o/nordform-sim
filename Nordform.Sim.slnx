@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Nordform.Sim.Core/Nordform.Sim.Core.csproj" />
+    <Project Path="src/Nordform.Sim.Cli/Nordform.Sim.Cli.csproj" />
+    <Project Path="src/Nordform.Sim.Api/Nordform.Sim.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Nordform.Sim.Core.Tests/Nordform.Sim.Core.Tests.csproj" />
+  </Folder>
+</Solution>
