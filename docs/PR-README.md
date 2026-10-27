@@ -370,3 +370,52 @@ Ingen påverkan på simuleringens mätvärden eller befintliga endpoints. Inga �
 - [x] Samma seed ger samma resultat (ej tillämpligt, ingen simuleringslogik)
 - [x] Tavlan i README är uppdaterad
 - [x] Ingen verklig kunddata i ändringen
+
+---
+
+## PR-0006: CI-pipeline med GitHub Actions (NF-080)
+
+Ärenden på tavlan: NF-080.
+
+### Sammanfattning
+
+Lägger till `.github/workflows/ci.yml`: en GitHub Actions-pipeline som kör `dotnet build` och `dotnet test` för hela lösningen vid varje push till en gren och vid pull requests mot `main`.
+
+### Motivering
+
+Fram till nu har bygge och tester bara körts manuellt (NF-005 och varje PR sedan). Ju fler ärenden som läggs till, desto större risk att en ändring på en gren bryter bygget eller testerna utan att någon märker det förrän den granskas. En pipeline ger samma svar automatiskt, på varje push.
+
+### Ändringar
+
+**ci**
+- `.github/workflows/ci.yml`: jobbet `build-and-test` på `ubuntu-latest`. Checkar ut koden, sätter upp .NET 10 SDK (`actions/setup-dotnet`), kör `dotnet restore`, `dotnet build --configuration Release` och `dotnet test --configuration Release`. Körs på push till alla grenar och på pull requests mot `main`.
+
+### Så testar du
+
+```bash
+dotnet restore
+dotnet build --no-restore --configuration Release
+dotnet test --no-build --configuration Release
+```
+
+Samma kommandon som pipelinen själv, körda lokalt: 0 fel, 0 varningar, 40 av 40 tester gröna. Pipelinen går att se köra på fliken "Actions" på GitHub efter push.
+
+### Resultat
+
+Ingen påverkan på simuleringens mätvärden eller någon befintlig kod.
+
+### Risker och begränsningar
+
+- Bygger och testar bara på Linux (`ubuntu-latest`). Räcker för att fånga de vanligaste felen, men täcker inte Windows-specifika problem (projektet körs annars på Windows lokalt).
+- `--configuration Release` används i pipelinen men inte i den dagliga arbetsflödet (`dotnet build`/`dotnet test` utan flagga, som ger Debug). De två har inte setts isär förut; skillnaden bör inte påverka testernas utfall, men det är inte garanterat.
+- Ingen caching av NuGet-paket. Med den här lösningens storlek är det inte värt komplexiteten ännu.
+- Pipelinen körs inte här (ingen åtkomst till GitHub Actions i den här sessionen). Verifierad genom att köra exakt samma kommandon lokalt.
+
+### Checklista
+
+- [x] Bygger utan varningar
+- [x] Alla tester passerar
+- [x] Nya tester för ny logik (ej tillämpligt, ingen kod att testa)
+- [x] Samma seed ger samma resultat (ej tillämpligt)
+- [x] Tavlan i README är uppdaterad
+- [x] Ingen verklig kunddata i ändringen

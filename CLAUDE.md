@@ -49,7 +49,8 @@ Prototypen `prototype/nordform-map.html` körs direkt i webbläsaren, utan bygge
 - NF-016 är klart: motorns resultat jämfört med webbprototypen för samma seed (4217, Normal dag). Talen ligger nära men är inte identiska eftersom motorn drar ett extra slumptal per order (produktval), vilket skjuter talföljden. Förklaringen finns i PR-0003.
 - NF-040 är klart: CLI:n har ett batchläge (`dotnet run --project src/Nordform.Sim.Cli -- batch`) som skriver CSV och JSON för alla scenarier × tre seeds × tre strategier. Beskrivet i PR-0004.
 - NF-051 är klart: `Nordform.Sim.Api` har `/layouts`, `/products` och `/scenarios` (lista och läsa enskilt id), med skydd mot path traversal. Beskrivet i PR-0005.
-- Tavlans P1-kö är tom. Nästa kandidat är NF-080 (storlek S), eller någon av NF-013/NF-014/NF-030-032/NF-050 om nästa steg ska vara motorns beteende eller API-strömmen snarare än verktyg.
+- NF-080 är klart: `.github/workflows/ci.yml` kör `dotnet build` och `dotnet test` på push och pull request mot main. Beskrivet i PR-0006.
+- Tavlans P1-kö är tom. Allt kvar är P2/P3-backlog som kräver designval: OR-Tools (NF-020), SignalR-ström (NF-050), webbvisare (NF-060), fler kartor (NF-070) och liknande. Fråga användaren innan du väljer något av dessa.
 
 ## Känt och uppskjutet
 

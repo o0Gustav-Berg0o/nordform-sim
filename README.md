@@ -98,7 +98,7 @@ Den här listan är projektets issue-tavla. Varje rad är ett ärende.
 
 ### Nästa (P1)
 
-_Inget just nu. Nästa kandidat från backloggen: NF-080 (storlek S, beror bara på NF-005 som är klart)._
+_Inget just nu._
 
 ### Backlog (P2)
 
@@ -110,7 +110,6 @@ _Inget just nu. Nästa kandidat från backloggen: NF-080 (storlek S, beror bara 
 - [ ] **NF-050** `[api]` SignalR-ström av simuleringstillstånd. (M, beror på NF-010)
 - [ ] **NF-060** `[web]` Visare i React eller Angular som ritar kartan från layoutfilen. (L, beror på NF-050)
 - [ ] **NF-070** `[data]` Fler kartor: cellbaserad, job shop, hub och spokes, dålig layout med avsikt. (M)
-- [ ] **NF-080** `[ci]` Pipeline som bygger och kör alla tester vid varje ändring. (S, beror på NF-005)
 
 ### Senare (P3)
 
@@ -139,6 +138,7 @@ _Inget just nu. Nästa kandidat från backloggen: NF-080 (storlek S, beror bara 
 - [x] **NF-016** `[core]` Jämfört motorns resultat med webbprototypen för samma seed. Nära men inte identiska tal: motorn drar ett extra slumptal per order för produktval, vilket skjuter talföljden.
 - [x] **NF-040** `[cli]` Batchläge (`dotnet run --project src/Nordform.Sim.Cli batch`) som kör alla strategier × scenarier × tre seeds och skriver CSV och JSON till en utmapp.
 - [x] **NF-051** `[api]` Endpoints för att lista och läsa layouter, produkter och scenarier: `GET /layouts`, `/layouts/{id}`, `/products`, `/products/{id}`, `/scenarios`, `/scenarios/{id}`.
+- [x] **NF-080** `[ci]` GitHub Actions-pipeline (`.github/workflows/ci.yml`) som kör `dotnet build` och `dotnet test` vid varje push och pull request mot main.
 
 ## Arbetssätt
 
