@@ -1,0 +1,11 @@
+{
+  "name": "Blockerad korridor J2-CNC ska fortfarande leverera via omväg",
+  "layout": "furniture-line",
+  "products": "furniture-products",
+  "scenario": "normal-day",
+  "durationSeconds": 1800,
+  "blockedCorridors": [["J2", "CNC"]],
+  "expect": {
+    "minShipped": 1
+  }
+}

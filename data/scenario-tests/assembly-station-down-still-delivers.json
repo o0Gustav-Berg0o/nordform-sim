@@ -1,0 +1,11 @@
+{
+  "name": "Montering A avstängd ska fortfarande leverera via Montering B",
+  "layout": "furniture-line",
+  "products": "furniture-products",
+  "scenario": "normal-day",
+  "durationSeconds": 1800,
+  "downStations": ["MONA"],
+  "expect": {
+    "minShipped": 1
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "Hela flottan havererad ska inte kunna leverera något",
+  "layout": "furniture-line",
+  "products": "furniture-products",
+  "scenario": "normal-day",
+  "durationSeconds": 1800,
+  "brokenTrucks": [0, 1, 2, 3, 4],
+  "expect": {
+    "maxShipped": 0
+  }
+}

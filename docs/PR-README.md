@@ -420,7 +420,54 @@ Ingen påverkan på simuleringens mätvärden eller någon befintlig kod.
 - [x] Tavlan i README är uppdaterad
 - [x] Ingen verklig kunddata i ändringen
 
-## PR-0007: Stationskapacitet, omställningstid och störningar (NF-013, NF-014)
+## PR-0007: Scenariotester och egenskapstester (NF-030, NF-031)
+
+Ärenden på tavlan: NF-030, NF-031.
+
+### Sammanfattning
+
+Lägger till ett dataformat för "situationer" i `data/scenario-tests/*.json` (layout, produkter, scenario, störningar och förväntad utgång), med en xUnit-testrunna som kör varje fil. Lägger också till egenskapstester med FsCheck som kontrollerar motorns invarianter för slumpmässigt genererade seeds och strategier, inte bara för de fasta exemplen i `EngineTests`.
+
+### Motivering
+
+Fram till nu testade motorn bara mot ett fast antal handskrivna exempel. NF-030 gör det möjligt att beskriva en ny situation (en störning plus ett förväntat utfall) utan att skriva ny C#-kod, vilket matchar projektets princip om datadrivna scenarier. NF-031 täcker fall de fasta exemplen råkar missa, till exempel ovanliga seeds där två truckar skulle kunna råka dela ett uppdrag.
+
+### Ändringar
+
+**test**
+- `data/scenario-tests/*.json`: tre situationer — blockerad korridor, avstängd monteringsstation, och en flotta där alla truckar har haverat.
+- `tests/Nordform.Sim.Core.Tests/ScenarioTestCase.cs`: datamodell för en situation (`ScenarioTestCase`, `Expectation`).
+- `tests/Nordform.Sim.Core.Tests/ScenarioTests.cs`: läser varje fil i `data/scenario-tests/`, kör motorn med angivna störningar, och kontrollerar `minShipped`/`maxShipped`/`minCompletedTransports` mot `GetMetrics()`.
+- `tests/Nordform.Sim.Core.Tests/PropertyTests.cs`: fyra egenskaper med FsCheck.Xunit — ingen truck delar uppdrag, `OrdersStarted == ActivePallets + Shipped`, WIP är aldrig negativ, och mätvärdena håller sig inom rimliga gränser — körda över slumpmässiga seeds och alla tre strategier.
+- `tests/Nordform.Sim.Core.Tests/Nordform.Sim.Core.Tests.csproj`: nytt paket `FsCheck.Xunit`.
+
+### Så testar du
+
+```bash
+dotnet test
+```
+
+51 av 51 tester gröna (36 Core, 12 Api, 3 Cli).
+
+### Resultat
+
+Ingen påverkan på simuleringens kod eller mätvärden, bara nya tester.
+
+### Risker och begränsningar
+
+- Egenskapstesterna kör 2000–3000 tidssteg per genererad seed, vilket gör dem märkbart långsammare än de övriga testerna (fortfarande under en sekund totalt). Om testsviten växer mycket mer kan `MaxTest` behöva sänkas.
+- `scenario-tests`-situationerna beskriver bara utfall i termer av `Shipped`/`CompletedTransports`. Räcker för de störningar som finns nu (NF-013/NF-014), men ett mer finmaskigt förväntat beteende (till exempel exakt kötid) kräver fler fält i formatet.
+
+### Checklista
+
+- [x] Bygger utan varningar
+- [x] Alla tester passerar (51 totalt)
+- [x] Nya tester för ny logik
+- [x] Samma seed ger samma resultat (ej tillämpligt, bara nya tester)
+- [x] Tavlan i README är uppdaterad
+- [x] Ingen verklig kunddata i ändringen
+
+## PR-0008: Stationskapacitet, omställningstid och störningar (NF-013, NF-014)
 
 Ärenden på tavlan: NF-013, NF-014.
 
