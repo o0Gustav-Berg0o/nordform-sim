@@ -98,7 +98,7 @@ Den här listan är projektets issue-tavla. Varje rad är ett ärende.
 
 ### Nästa (P1)
 
-_Inget just nu. Nästa kandidater från backloggen: NF-051 och NF-080 (bara storlek S, beror bara på NF-005 som är klart)._
+_Inget just nu. Nästa kandidat från backloggen: NF-080 (storlek S, beror bara på NF-005 som är klart)._
 
 ### Backlog (P2)
 
@@ -108,7 +108,6 @@ _Inget just nu. Nästa kandidater från backloggen: NF-051 och NF-080 (bara stor
 - [ ] **NF-031** `[test]` Egenskapstester med FsCheck, till exempel att ingen truck har två uppdrag samtidigt. (M, beror på NF-010)
 - [ ] **NF-032** `[test]` Regressionsbaslinje: spara mätvärden per seed och larma vid försämring. (M, beror på NF-015)
 - [ ] **NF-050** `[api]` SignalR-ström av simuleringstillstånd. (M, beror på NF-010)
-- [ ] **NF-051** `[api]` Endpoints för att lista och läsa layouter, produkter och scenarier. (S)
 - [ ] **NF-060** `[web]` Visare i React eller Angular som ritar kartan från layoutfilen. (L, beror på NF-050)
 - [ ] **NF-070** `[data]` Fler kartor: cellbaserad, job shop, hub och spokes, dålig layout med avsikt. (M)
 - [ ] **NF-080** `[ci]` Pipeline som bygger och kör alla tester vid varje ändring. (S, beror på NF-005)
@@ -139,6 +138,7 @@ _Inget just nu. Nästa kandidater från backloggen: NF-051 och NF-080 (bara stor
 - [x] **NF-015** `[core]` Mätvärden: tomkörning, snittväntan, sträcka, kö, utnyttjande, levererade order. `SimulationMetrics`.
 - [x] **NF-016** `[core]` Jämfört motorns resultat med webbprototypen för samma seed. Nära men inte identiska tal: motorn drar ett extra slumptal per order för produktval, vilket skjuter talföljden.
 - [x] **NF-040** `[cli]` Batchläge (`dotnet run --project src/Nordform.Sim.Cli batch`) som kör alla strategier × scenarier × tre seeds och skriver CSV och JSON till en utmapp.
+- [x] **NF-051** `[api]` Endpoints för att lista och läsa layouter, produkter och scenarier: `GET /layouts`, `/layouts/{id}`, `/products`, `/products/{id}`, `/scenarios`, `/scenarios/{id}`.
 
 ## Arbetssätt
 

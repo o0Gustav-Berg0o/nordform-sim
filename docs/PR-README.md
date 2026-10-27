@@ -308,3 +308,65 @@ Ingen påverkan på simuleringens mätvärden. Det vanliga jämförelseläget ge
 - [x] Samma seed ger samma resultat
 - [x] Tavlan i README är uppdaterad
 - [x] Ingen verklig kunddata i ändringen
+
+---
+
+## PR-0005: API-endpoints för layout, produkter och scenarier (NF-051)
+
+Ärenden på tavlan: NF-051.
+
+### Sammanfattning
+
+Lägger till sex GET-endpoints i `Nordform.Sim.Api` för att lista och läsa datafilerna: `/layouts`, `/layouts/{id}`, `/products`, `/products/{id}`, `/scenarios`, `/scenarios/{id}`. Varje `{id}`-endpoint läser motsvarande JSON-fil från `data/<resurs>/<id>.json` och returnerar den typade modellen.
+
+### Motivering
+
+API:t hade bara `/health` och `/strategies`. Innan en webbvisare (NF-060) eller en live-ström (NF-050) kan byggas behöver frontend-sidan ett sätt att hämta vilka layouter, produkter och scenarier som finns, utan att känna till filsystemet eller bygga in data statiskt.
+
+### Ändringar
+
+**api**
+- `DataCatalog.cs`: listar id:n (filnamn utan `.json`) i en resursmapp och slår upp sökvägen till en specifik fil. Skyddar mot path traversal genom att vägra id:n med `/`, `\` eller `..` och genom att kontrollera att den upplösta sökvägen ligger inom resursmappen.
+- `DataCatalog.FindDataDir`: letar uppåt från contentRoot efter `Nordform.Sim.slnx` för att hitta repots `data`-mapp, eftersom ASP.NET Core sätter contentRoot till projektmappen (`src/Nordform.Sim.Api`), inte repots rot. Kan överstyras med konfigurationsnyckeln `DataDir`, till exempel vid driftsättning.
+- `Program.cs`: de sex nya endpointen. Okänt eller otillåtet id ger 404.
+
+**test**
+- Nytt testprojekt `Nordform.Sim.Api.Tests` (`Microsoft.AspNetCore.Mvc.Testing`), tillagt i `Nordform.Sim.slnx`.
+- `EndpointTests`: listorna innehåller kända id:n, `{id}`-endpointen returnerar rätt innehåll, saknat id ger 404, och försök till path traversal (`..%2f..%2fappsettings`, `..%5c..%5cappsettings`) ger 404 i stället för att läsa filer utanför `data/`.
+
+### Så testar du
+
+```bash
+dotnet build
+dotnet test
+dotnet run --project src/Nordform.Sim.Api
+```
+
+```bash
+curl http://localhost:5000/layouts
+curl http://localhost:5000/layouts/furniture-line
+curl http://localhost:5000/products
+curl http://localhost:5000/scenarios
+curl http://localhost:5000/scenarios/normal-day
+```
+
+Manuellt verifierat: alla sex endpoints svarar med rätt data, `/scenarios/does-not-exist` ger 404, och `/scenarios/..%2f..%2fappsettings` ger 404 (inte filinnehåll utanför `data/`).
+
+### Resultat
+
+Ingen påverkan på simuleringens mätvärden eller befintliga endpoints. Inga ändringar i `/health` eller `/strategies`.
+
+### Risker och begränsningar
+
+- Ingen autentisering eller CORS. API:t är tänkt för lokal utveckling och en kommande frontend på samma ursprung (NF-060); det måste ses över innan en publik demo (NF-081).
+- `id` matchar exakt ett filnamn (skiftlägeskänsligt på de filsystem där det spelar roll). Ingen sök- eller filtreringsfunktion.
+- `/products/{id}` returnerar en hel fil (en lista av produkter), inte en enskild produkt. Dagens enda produktfil (`furniture-products`) innehåller alla produkter, så det täcker nuvarande behov.
+
+### Checklista
+
+- [x] Bygger utan varningar
+- [x] Alla tester passerar
+- [x] Nya tester för ny logik
+- [x] Samma seed ger samma resultat (ej tillämpligt, ingen simuleringslogik)
+- [x] Tavlan i README är uppdaterad
+- [x] Ingen verklig kunddata i ändringen

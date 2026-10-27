@@ -7,5 +7,6 @@
   <Folder Name="/tests/">
     <Project Path="tests/Nordform.Sim.Core.Tests/Nordform.Sim.Core.Tests.csproj" />
     <Project Path="tests/Nordform.Sim.Cli.Tests/Nordform.Sim.Cli.Tests.csproj" />
+    <Project Path="tests/Nordform.Sim.Api.Tests/Nordform.Sim.Api.Tests.csproj" />
   </Folder>
 </Solution>
