@@ -38,7 +38,15 @@ dotnet run --project src/Nordform.Sim.Api            # /health, /strategies, /la
 
 Prototypen av kartan körs direkt i webbläsaren, utan bygge: öppna `prototype/nordform-map.html`.
 
-> Status: `dotnet build` och `dotnet test` är körda och gröna: 0 fel, 0 varningar, 76 av 76 tester passerar.
+Webbvisaren (`web/`) behöver API:et igång (se ovan) och körs separat:
+
+```bash
+cd web
+npm install
+npm run dev            # http://localhost:5173, ansluter till API:et på http://localhost:5000
+```
+
+> Status: `dotnet build` och `dotnet test` är körda och gröna: 0 fel, 0 varningar, 76 av 76 tester passerar. Webbvisaren byggd med `npm run build` och testad i webbläsaren mot en körande API-instans.
 
 ## Teknikstack
 
@@ -59,13 +67,18 @@ Nordform.Sim.slnx
 src/
   Nordform.Sim.Core/     Modeller, PathFinder, planeringsstrategier, SimulationEngine, Rng
   Nordform.Sim.Cli/      Kommandorad: kör strategierna mot ett scenario och jämför
-  Nordform.Sim.Api/      Web API och live-ström (kommer)
+  Nordform.Sim.Api/      Web API, SignalR-ström (/hub/simulation) av simuleringstillstånd
 tests/
   Nordform.Sim.Core.Tests/
+  Nordform.Sim.Cli.Tests/
+  Nordform.Sim.Api.Tests/
 data/
-  layouts/               Fabrikskartor (noder, korridorer, stationer)
+  layouts/               Fabrikskartor (noder, korridorer, stationer): furniture-line, cell-based, job-shop, hub-and-spokes, bad-layout
   products/              Produkter och arbetsplaner
   scenarios/             Orderflöde, flotta, seed
+  scenario-tests/        Situationer med förväntat beteende (NF-030)
+  regression-baseline.json   Kända mätvärden per scenario och strategi (NF-032)
+web/                     Webbvisare i React/TypeScript/Vite, ansluter till API:et och SignalR-strömmen
 prototype/               Webbprototyp av kartan (ren HTML, JavaScript och SVG)
 docs/
   PR-README.md           PR-liknande dokumentation och mall
@@ -102,7 +115,7 @@ _Inget just nu._
 
 ### Backlog (P2)
 
-- [ ] **NF-060** `[web]` Visare i React eller Angular som ritar kartan från layoutfilen. (L, beror på NF-050)
+_Inget just nu._
 
 ### Senare (P3)
 
@@ -139,6 +152,7 @@ _Inget just nu._
 - [x] **NF-032** `[test]` Regressionsbaslinje i `data/regression-baseline.json`: larmar om ett scenario/strategi-par blir sämre (färre order, längre väntan) än en känd körning.
 - [x] **NF-070** `[data]` Fler kartor: `cell-based`, `job-shop`, `hub-and-spokes`, `bad-layout`.
 - [x] **NF-050** `[api]` SignalR-ström av simuleringstillstånd: `POST /simulations`, `GET /simulations/{id}`, `POST /simulations/{id}/stop`, hubb på `/hub/simulation`.
+- [x] **NF-060** `[web]` Webbvisare i `web/` (React, TypeScript, Vite): ritar layouten som SVG och animerar truckarna live via SignalR-strömmen.
 
 ## Arbetssätt
 

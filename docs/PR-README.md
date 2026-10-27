@@ -665,3 +665,57 @@ Ingen påverkan på befintliga scenarier: `Capacity` och `ChangeoverSeconds` är
 - [x] Samma seed ger samma resultat
 - [x] Tavlan i README är uppdaterad
 - [x] Ingen verklig kunddata i ändringen
+
+## PR-0012: Webbvisare i React (NF-060)
+
+Ärenden på tavlan: NF-060.
+
+### Sammanfattning
+
+Lägger till `web/`, en React/TypeScript/Vite-app som ritar vald layout som SVG och ansluter till `/hub/simulation` (NF-050) för att animera truckarna i realtid. Dropdowns för layout, produkter, scenario och strategi hämtas från API:et; ett hastighetsreglage styr hur många simulerade sekunder som körs per real sekund.
+
+### Motivering
+
+Prototypen (`prototype/nordform-map.html`) visar en inbyggd, hårdkodad layout och simulerar i webbläsaren själv. Den riktiga motorn (`Nordform.Sim.Core`) körs bara i .NET. NF-060 kopplar ihop dem: samma SVG-ritning som prototypen, men driven av den riktiga motorn via API:et och SignalR-strömmen, och valbar mellan vilken layout/produkter/scenario/strategi som helst som finns i `data/`.
+
+### Ändringar
+
+**web** (nytt projekt, React 18 + TypeScript + Vite 4, `@microsoft/signalr`)
+- `src/types.ts`: TypeScript-typer som speglar JSON-formen från `Nordform.Sim.Core` (camelCase via `JsonSerializerDefaults.Web`).
+- `src/api.ts`: hämtar listor och enskilda layouter/produkter/scenarier, startar/läser/stoppar en simuleringssession.
+- `src/useSimulationStream.ts`: ansluter till `/hub/simulation`, går med i sessionens grupp, håller senaste ögonblicket. Läser också ett ögonblick direkt via HTTP innan strömmen hunnit skicka något.
+- `src/FactoryMap.tsx`: ritar noder, korridorer (röda och streckade om blockerade), stationer och truckar som SVG, portat från prototypens ritlogik men driven av layout-JSON och truckarnas verkliga positioner.
+- `src/App.tsx`: dropdowns för layout/produkter/scenario/strategi, hastighetsreglage, start/stopp-knapp, mätvärdespanel.
+
+**api**
+- `Program.cs`: lägger till en CORS-policy (`SetIsOriginAllowed(_ => true)` plus `AllowCredentials`) så webbvisarens dev-server (en annan origin, port 5173) kan nå API:et och SignalR-hubben. Bara för lokal utveckling, ingen autentisering.
+
+### Så testar du
+
+```bash
+cd web
+npm install
+npm run build                       # tsc + vite build, inga typfel
+```
+
+Testat manuellt end-to-end i webbläsaren: `dotnet run --project src/Nordform.Sim.Api --no-launch-profile --urls http://localhost:5000` i en terminal, `npm run dev` i `web/` i en annan, öppnade `http://localhost:5173`. Layouten ritades korrekt, en session startad på `furniture-line`/`normal-day`/Närmaste uppdrag visade truckar som rörde sig live och mätvärden (simulerad tid, levererade order, tomkörning, snittväntan, utnyttjandegrad) som uppdaterades i realtid (simulerad tid gick från 240 s till 400 s mellan två avläsningar utan att sidan laddades om). Stopp-knappen avslutade sessionen och återställde panelen. Inga konsolfel.
+
+### Resultat
+
+Ingen påverkan på simuleringens kod eller mätvärden. CORS-policyn är den enda ändringen i API:et, och den påverkar bara vilka origin som får anropa det, inte svaren.
+
+### Risker och begränsningar
+
+- Ingen automatiserad testsvit för React-koden (inga enhetstester för komponenterna). `npm run build` fångar typfel men inte beteendefel. Ett eget testverktyg (till exempel Vitest) är utanför den här ärendets storlek.
+- CORS-policyn (`SetIsOriginAllowed(_ => true)`) tillåter alla origin. Rimligt för lokal utveckling, men måste strammas åt innan API:et exponeras någon annanstans.
+- `npm install` gav en `EBADENGINE`-varning eftersom miljön har Node 16 och ett beroendes `package.json` vill ha Node 18+. Allt fungerade ändå (installation, bygge, körning i webbläsaren), men en senare uppgradering av Node rekommenderas.
+- Ingen hantering av att SignalR-anslutningen tappas (`withAutomaticReconnect()` är påslaget, men inget i gränssnittet visar om anslutningen är nere).
+
+### Checklista
+
+- [x] Bygger utan varningar (`dotnet build` och `npm run build`)
+- [x] Alla tester passerar (76 av 76 i .NET-lösningen, oförändrat av den här ändringen)
+- [ ] Nya tester för ny logik (ingen testsvit för webbvisaren ännu, se begränsningar)
+- [x] Samma seed ger samma resultat (ej tillämpligt, ingen ändring i motorn)
+- [x] Tavlan i README är uppdaterad
+- [x] Ingen verklig kunddata i ändringen

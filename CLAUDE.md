@@ -20,7 +20,10 @@ dotnet test
 dotnet run --project src/Nordform.Sim.Cli
 dotnet run --project src/Nordform.Sim.Cli data data/scenarios/high-load.json
 dotnet run --project src/Nordform.Sim.Cli -- batch data out
-dotnet run --project src/Nordform.Sim.Api
+dotnet run --project src/Nordform.Sim.Api --no-launch-profile --urls http://localhost:5000
+
+cd web && npm install && npm run dev    # webbvisare, http://localhost:5173, kräver API:et igång
+cd web && npm run build                 # tsc + vite build
 ```
 
 Prototypen `prototype/nordform-map.html` körs direkt i webbläsaren, utan bygge.
@@ -55,7 +58,8 @@ Prototypen `prototype/nordform-map.html` körs direkt i webbläsaren, utan bygge
 - NF-032 är klar: `data/regression-baseline.json` plus `RegressionBaselineTests` larmar om en ändring gör ett scenario/strategi-par sämre än en känd körning. Beskrivet i PR-0008. Baslinjen måste uppdateras manuellt vid en avsiktlig beteendeändring.
 - NF-070 är klar: fyra nya layouter (`cell-based`, `job-shop`, `hub-and-spokes`, `bad-layout`) i `data/layouts/`, alla körbara med `furniture-products` och befintliga scenarier. Beskrivet i PR-0009.
 - NF-050 är klar: SignalR-hubb på `/hub/simulation` (`SimulationHub`), driven av `SimulationSessionManager` som kör en `SimulationEngine` i realtid i en bakgrundstask. Styrs via `POST /simulations`, `GET /simulations/{id}`, `POST /simulations/{id}/stop`. Beskrivet i PR-0010.
-- Tavlans P1- och P2-kö utan designval är tom. Kvar på P2: webbvisare (NF-060, beror på NF-050, valt React). P3 kräver i stort sett alla designval (OR-Tools, layouteditor, m.m.). Fråga användaren innan du väljer något av dessa.
+- NF-060 är klar: webbvisare i `web/` (React 18, TypeScript, Vite 4, `@microsoft/signalr`). Ritar layouten som SVG och animerar truckarna live via NF-050-strömmen. Körs separat från API:et (`cd web && npm install && npm run dev`, port 5173). API:et har fått en öppen CORS-policy för det (bara lokal utveckling). Testat manuellt end-to-end i webbläsaren, ingen egen testsvit för React-koden ännu. Beskrivet i PR-0012.
+- Tavlans P1- och P2-kö är tom. Allt kvar är P3-backlog, som kräver designval (OR-Tools, layouteditor, nya datatyper). Fråga användaren innan du väljer något av dessa.
 
 ## Känt och uppskjutet
 

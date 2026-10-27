@@ -5,7 +5,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<ISimulationBroadcaster, SignalRSimulationBroadcaster>();
 builder.Services.AddSingleton<SimulationSessionManager>();
+
+// NF-060: webbvisaren körs som en egen dev-server (Vite, port 5173) och behöver nå API:et
+// från en annan origin. Ingen autentisering ännu, så detta är bara för lokal utveckling.
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
+    .SetIsOriginAllowed(_ => true)
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()));
+
 var app = builder.Build();
+app.UseCors();
 
 var dataDir = app.Configuration["DataDir"] ?? DataCatalog.FindDataDir(app.Environment.ContentRootPath);
 
