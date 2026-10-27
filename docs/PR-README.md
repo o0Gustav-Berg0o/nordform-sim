@@ -255,3 +255,56 @@ Talen ligger nära varandra (tomkörning inom 3 procentenheter, sträcka inom 2 
 - [x] Samma seed ger samma resultat
 - [x] Tavlan i README är uppdaterad
 - [x] Ingen verklig kunddata i ändringen
+
+---
+
+## PR-0004: Batchläge i CLI:n med CSV och JSON (NF-040)
+
+Ärenden på tavlan: NF-040.
+
+### Sammanfattning
+
+Lägger till ett batchläge i CLI:n: `dotnet run --project src/Nordform.Sim.Cli -- batch [datamapp] [utmapp]` kör alla planeringsstrategier mot alla scenariofiler i datamappen, för tre fasta seeds (4217, 1000, 2000), och skriver resultatet till `batch-results.csv` och `batch-results.json` i utmappen. Det vanliga jämförelseläget (en tabell på konsolen för ett scenario) är oförändrat.
+
+### Motivering
+
+Jämförelsetabellen på konsolen räcker för en enda körning, men för att jämföra planeringsmetoder och scenarier systematiskt (och senare kunna bygga en regressionsbaslinje, NF-032) behövs resultat i ett format som går att läsa in i ett kalkylblad eller ett annat skript. CSV och JSON täcker båda användningarna.
+
+### Ändringar
+
+**cli**
+- `BatchRunner.cs`: kör strategier × alla scenariofiler i `data/scenarios` × tre seeds, samlar resultatet i `BatchRow`-poster, och skriver CSV respektive JSON.
+- `Program.cs`: nytt grenval `batch [datamapp] [utmapp]` före det befintliga jämförelseläget, som är oförändrat.
+
+**test**
+- Nytt testprojekt `Nordform.Sim.Cli.Tests`, tillagt i `Nordform.Sim.slnx`.
+- `BatchRunnerTests`: rätt antal rader (scenarier × 3 seeds × 3 strategier), samma seed ger samma resultat igen, CSV och JSON går att skriva och läsa tillbaka.
+
+### Så testar du
+
+```bash
+dotnet build
+dotnet test
+dotnet run --project src/Nordform.Sim.Cli -- batch data out
+```
+
+Förväntat resultat: `out/batch-results.csv` och `out/batch-results.json` skapas, en rad per kombination av scenario, seed och strategi (2 scenarier × 3 seeds × 3 strategier = 18 rader för datamappen i repot). `out/` är redan i `.gitignore`.
+
+### Resultat
+
+Ingen påverkan på simuleringens mätvärden. Det vanliga jämförelseläget ger samma utskrift som i PR-0002 och PR-0003 för seed 4217.
+
+### Risker och begränsningar
+
+- Seeds är hårdkodade (4217, 1000, 2000) i `BatchRunner`, inte ett CLI-argument. Räcker för att se spridning mellan seeds, men en framtida regressionsbaslinje (NF-032) kan behöva fler eller konfigurerbara seeds.
+- Batchkörningen håller hela resultatet i minnet innan den skriver filerna. Inget problem vid den här skalan (scenarier × 3 seeds × 3 strategier), men kan behöva strömmas om antalet scenarier växer mycket (NF-070).
+- Ingen progressutskrift under körningen. Vid många scenarier kan CLI:n se ut att hänga.
+
+### Checklista
+
+- [x] Bygger utan varningar
+- [x] Alla tester passerar
+- [x] Nya tester för ny logik
+- [x] Samma seed ger samma resultat
+- [x] Tavlan i README är uppdaterad
+- [x] Ingen verklig kunddata i ändringen

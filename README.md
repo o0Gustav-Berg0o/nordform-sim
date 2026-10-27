@@ -32,6 +32,7 @@ Kräver [.NET 10 SDK](https://dotnet.microsoft.com/download).
 dotnet build
 dotnet test
 dotnet run --project src/Nordform.Sim.Cli            # kör alla tre strategier på normal-day och skriver en jämförelse
+dotnet run --project src/Nordform.Sim.Cli -- batch data out   # alla scenarier × tre seeds × tre strategier, CSV och JSON
 dotnet run --project src/Nordform.Sim.Api            # /health och /strategies
 ```
 
@@ -97,7 +98,7 @@ Den här listan är projektets issue-tavla. Varje rad är ett ärende.
 
 ### Nästa (P1)
 
-- [ ] **NF-040** `[cli]` Batchrunner som kör strategier × scenarier × seeds och skriver CSV och JSON. Första versionen finns i CLI:n, men skriver bara en tabell. (M, beror på NF-005)
+_Inget just nu. Nästa kandidater från backloggen: NF-051 och NF-080 (bara storlek S, beror bara på NF-005 som är klart)._
 
 ### Backlog (P2)
 
@@ -137,6 +138,7 @@ Den här listan är projektets issue-tavla. Varje rad är ett ärende.
 - [x] **NF-012** `[core]` Skapa order ur produktmix och arbetsplan, med val mellan alternativa stationer (Montering A eller B).
 - [x] **NF-015** `[core]` Mätvärden: tomkörning, snittväntan, sträcka, kö, utnyttjande, levererade order. `SimulationMetrics`.
 - [x] **NF-016** `[core]` Jämfört motorns resultat med webbprototypen för samma seed. Nära men inte identiska tal: motorn drar ett extra slumptal per order för produktval, vilket skjuter talföljden.
+- [x] **NF-040** `[cli]` Batchläge (`dotnet run --project src/Nordform.Sim.Cli batch`) som kör alla strategier × scenarier × tre seeds och skriver CSV och JSON till en utmapp.
 
 ## Arbetssätt
 

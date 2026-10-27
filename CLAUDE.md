@@ -19,6 +19,7 @@ dotnet build
 dotnet test
 dotnet run --project src/Nordform.Sim.Cli
 dotnet run --project src/Nordform.Sim.Cli data data/scenarios/high-load.json
+dotnet run --project src/Nordform.Sim.Cli -- batch data out
 dotnet run --project src/Nordform.Sim.Api
 ```
 
@@ -46,7 +47,8 @@ Prototypen `prototype/nordform-map.html` körs direkt i webbläsaren, utan bygge
 
 - NF-005 är klart: `dotnet build` och `dotnet test` är gröna (0 fel, 0 varningar, 25 av 25 tester), CLI:n körd och resultattabellen i PR-0002 ifylld.
 - NF-016 är klart: motorns resultat jämfört med webbprototypen för samma seed (4217, Normal dag). Talen ligger nära men är inte identiska eftersom motorn drar ett extra slumptal per order (produktval), vilket skjuter talföljden. Förklaringen finns i PR-0003.
-- Nästa uppgift på tavlan är NF-040 (batchrunner för CSV/JSON).
+- NF-040 är klart: CLI:n har ett batchläge (`dotnet run --project src/Nordform.Sim.Cli -- batch`) som skriver CSV och JSON för alla scenarier × tre seeds × tre strategier. Beskrivet i PR-0004.
+- Tavlans P1-kö är tom. Nästa kandidater är NF-051 eller NF-080 (båda storlek S), eller någon av NF-013/NF-014/NF-030-032 om nästa steg ska vara motorns beteende snarare än verktyg.
 
 ## Känt och uppskjutet
 

@@ -1,7 +1,30 @@
+using Nordform.Sim.Cli;
 using Nordform.Sim.Core;
 
 // Kör alla planeringsstrategier på samma layout, produkter och scenario och jämför mätvärdena.
 // Användning: dotnet run --project src/Nordform.Sim.Cli [datamapp] [scenariofil]
+// Batchläge: dotnet run --project src/Nordform.Sim.Cli batch [datamapp] [utmapp]
+if (args.Length > 0 && args[0] == "batch")
+{
+    var batchDataDir = args.Length > 1 ? args[1] : "data";
+    var outDir = args.Length > 2 ? args[2] : "out";
+    Directory.CreateDirectory(outDir);
+
+    var batchLayout = JsonData.Load<Layout>(Path.Combine(batchDataDir, "layouts", "furniture-line.json"));
+    var batchProducts = JsonData.Load<List<Product>>(Path.Combine(batchDataDir, "products", "furniture-products.json"));
+    var rows = BatchRunner.Run(batchDataDir, batchLayout, batchProducts);
+
+    var csvPath = Path.Combine(outDir, "batch-results.csv");
+    var jsonPath = Path.Combine(outDir, "batch-results.json");
+    BatchRunner.WriteCsv(csvPath, rows);
+    BatchRunner.WriteJson(jsonPath, rows);
+
+    Console.WriteLine($"{rows.Count} körningar (scenario × seed × strategi) skrivna till:");
+    Console.WriteLine($"  {csvPath}");
+    Console.WriteLine($"  {jsonPath}");
+    return;
+}
+
 var dataDir = args.Length > 0 ? args[0] : "data";
 var layout = JsonData.Load<Layout>(Path.Combine(dataDir, "layouts", "furniture-line.json"));
 var products = JsonData.Load<List<Product>>(Path.Combine(dataDir, "products", "furniture-products.json"));
