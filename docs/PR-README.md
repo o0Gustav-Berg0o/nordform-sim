@@ -467,7 +467,52 @@ Ingen påverkan på simuleringens kod eller mätvärden, bara nya tester.
 - [x] Tavlan i README är uppdaterad
 - [x] Ingen verklig kunddata i ändringen
 
-## PR-0008: Stationskapacitet, omställningstid och störningar (NF-013, NF-014)
+## PR-0008: Regressionsbaslinje (NF-032)
+
+Ärenden på tavlan: NF-032.
+
+### Sammanfattning
+
+Lägger till `data/regression-baseline.json` med kända mätvärden (levererade order, transporter, tomkörning, snittväntan) för varje kombination av scenario och strategi vid deras egna seed. `RegressionBaselineTests` körs mot filen och larmar om en framtida ändring gör resultaten sämre än baslinjen, inte bara olika.
+
+### Motivering
+
+Alla tidigare tester kontrollerar att motorn fungerar (levererar order, håller invarianter), men inget kontrollerade att en ändring inte av misstag försämrar planeringen. NF-032 ger ett larm specifikt för det: om någon rör motorn och snittväntan blir längre eller färre order levereras för samma scenario och strategi, slår ett tydligt test larm med vilket mått och hur mycket.
+
+### Ändringar
+
+**test**
+- `data/regression-baseline.json`: sex rader (normal-day/high-load × Fifo/Nearest/UrgentThenNearest), tagna från en körning med scenariernas egna seed (4217).
+- `tests/Nordform.Sim.Core.Tests/RegressionBaselineTests.cs`: körer varje rad mot motorn och jämför. Fyra riktade kontroller: `Shipped` och `CompletedTransports` får inte bli lägre (med 1 % marginal för flyttalsavrundning), `AverageWaitSeconds` och `EmptyPercent` får inte bli högre. En avsiktlig förbättring (snabbare leverans, mindre tomkörning) gör aldrig att testet slår larm, bara en försämring gör det.
+
+### Så testar du
+
+```bash
+dotnet test
+```
+
+57 av 57 tester gröna (42 Core, 12 Api, 3 Cli).
+
+### Resultat
+
+Ingen påverkan på simuleringens kod, bara ett nytt test och en ny datafil.
+
+### Risker och begränsningar
+
+- Baslinjen måste uppdateras medvetet (ny körning, nya tal i filen) när en ändring avsiktligt förändrar beteendet, annars larmar testet i onödan. Det finns ingen automatik för det ännu, det görs manuellt.
+- Täcker bara `furniture-line`-layouten med `normal-day` och `high-load`. Nya layouter (NF-070) behöver egna rader om de ska skyddas på samma sätt.
+- `DistanceMeters` och `UtilizationPercent` är med i baslinjefilen men kontrolleras inte i testet, eftersom en ändring kan göra dem högre eller lägre utan att det är en försämring i sig (till exempel en omväg som är dyrare i sträcka men snabbare i väntetid).
+
+### Checklista
+
+- [x] Bygger utan varningar
+- [x] Alla tester passerar (57 totalt)
+- [x] Nya tester för ny logik
+- [x] Samma seed ger samma resultat
+- [x] Tavlan i README är uppdaterad
+- [x] Ingen verklig kunddata i ändringen
+
+## PR-0009: Stationskapacitet, omställningstid och störningar (NF-013, NF-014)
 
 Ärenden på tavlan: NF-013, NF-014.
 

@@ -1,0 +1,50 @@
+[
+  {
+    "scenario": "normal-day",
+    "strategy": "Fifo",
+    "shipped": 27,
+    "completedTransports": 306,
+    "emptyPercent": 63.969856632445385,
+    "averageWaitSeconds": 9.687337662334357
+  },
+  {
+    "scenario": "normal-day",
+    "strategy": "Nearest",
+    "shipped": 27,
+    "completedTransports": 321,
+    "emptyPercent": 63.84362883208323,
+    "averageWaitSeconds": 10.015217391300991
+  },
+  {
+    "scenario": "normal-day",
+    "strategy": "UrgentThenNearest",
+    "shipped": 27,
+    "completedTransports": 322,
+    "emptyPercent": 63.3629829387906,
+    "averageWaitSeconds": 9.855864197527618
+  },
+  {
+    "scenario": "high-load",
+    "strategy": "Fifo",
+    "shipped": 36,
+    "completedTransports": 462,
+    "emptyPercent": 63.53422302146925,
+    "averageWaitSeconds": 39.55999999997853
+  },
+  {
+    "scenario": "high-load",
+    "strategy": "Nearest",
+    "shipped": 50,
+    "completedTransports": 583,
+    "emptyPercent": 49.10623182899079,
+    "averageWaitSeconds": 18.11333333332631
+  },
+  {
+    "scenario": "high-load",
+    "strategy": "UrgentThenNearest",
+    "shipped": 48,
+    "completedTransports": 562,
+    "emptyPercent": 51.147820005645364,
+    "averageWaitSeconds": 16.775929203532904
+  }
+]
