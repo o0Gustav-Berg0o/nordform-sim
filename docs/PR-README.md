@@ -512,7 +512,58 @@ Ingen påverkan på simuleringens kod, bara ett nytt test och en ny datafil.
 - [x] Tavlan i README är uppdaterad
 - [x] Ingen verklig kunddata i ändringen
 
-## PR-0009: Stationskapacitet, omställningstid och störningar (NF-013, NF-014)
+## PR-0009: Fler kartor (NF-070)
+
+Ärenden på tavlan: NF-070.
+
+### Sammanfattning
+
+Lägger till fyra nya layouter i `data/layouts/`: `cell-based` (stationer i fyra sammankopplade celler), `job-shop` (rutnät med flera lika maskiner, till exempel två sågar och två CNC), `hub-and-spokes` (alla stationer nås bara via en central hubb) och `bad-layout` (en enda korridor utan omvägar, med stationerna i en avsiktligt orimlig ordning). Alla fyra täcker samma stationstyper som `furniture-line` och kan köras direkt med `furniture-products` och de befintliga scenarierna.
+
+### Motivering
+
+`furniture-line` är i grunden en rak linje. Den täcker inte situationer som är vanliga i verklig internlogistik: celltillverkning, jobbshop med utbytbara maskiner, en centraliserad hubb, eller en medvetet dålig layout att jämföra mot. Fler kartor gör det möjligt att se om en planeringsmetod som vinner på en layout också vinner på en annan, vilket är poängen med hela testbädden.
+
+### Ändringar
+
+**data**
+- `data/layouts/cell-based.json`: fyra celler (mottagning/råvara, maskinbearbetning, lackering/montering, kvalitet/packning) kopplade av enkla broar mellan cellerna, med en loop inom varje cell för omväg.
+- `data/layouts/job-shop.json`: 3×5-rutnät med två sågar och två CNC-maskiner, så att `ChooseStation` faktiskt får ett val att göra.
+- `data/layouts/hub-and-spokes.json`: tolv stationer i en cirkel, alla bara nåbara via en central nod `HUB`. Varje transport mellan två stationer passerar hubben.
+- `data/layouts/bad-layout.json`: en enda korridor (ingen loop, ingen omväg), med stationerna i en ordning som inte följer någon produkts arbetsplan, så att varje steg innebär en lång körning fram och tillbaka.
+
+**test**
+- `tests/Nordform.Sim.Core.Tests/MoreLayoutsTests.cs`: för varje ny layout — går att läsa och är sammanhängande, täcker alla stationstyper `furniture-products` behöver, och levererar faktiskt order på `normal-day`-scenariot.
+
+### Så testar du
+
+```bash
+dotnet test
+dotnet run --project src/Nordform.Sim.Api
+curl http://localhost:5000/layouts
+```
+
+69 av 69 tester gröna (54 Core, 12 Api, 3 Cli). De nya layouterna syns direkt i `/layouts` via API:et (NF-051) eftersom `DataCatalog` listar alla filer i mappen.
+
+### Resultat
+
+Ingen påverkan på `furniture-line` eller befintliga mätvärden. Bara nya datafiler och nya tester.
+
+### Risker och begränsningar
+
+- Ingen av layouterna har egna scenariofiler; de återanvänder `normal-day`/`high-load`, vilket fungerar eftersom produktmixen bara bryr sig om stationstyper, inte geografi. En jämförelse mellan layouterna (NF-062, jämförelsevy) skulle behöva köra samma scenario på alla fem layouterna och ställa mätvärdena bredvid varandra.
+- `bad-layout` har ingen omväg alls, vilket gör den känslig för `SetCorridorBlocked`: en blockering mitt i korridoren delar fabriken i två isolerade halvor. Det är avsiktligt (layouten är tänkt att vara dålig), men värt att komma ihåg om den kombineras med NF-014-störningar i ett test.
+
+### Checklista
+
+- [x] Bygger utan varningar
+- [x] Alla tester passerar (69 totalt)
+- [x] Nya tester för ny logik
+- [x] Samma seed ger samma resultat (ej tillämpligt, bara nya datafiler)
+- [x] Tavlan i README är uppdaterad
+- [x] Ingen verklig kunddata i ändringen
+
+## PR-0010: Stationskapacitet, omställningstid och störningar (NF-013, NF-014)
 
 Ärenden på tavlan: NF-013, NF-014.
 

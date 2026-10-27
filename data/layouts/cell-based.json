@@ -1,0 +1,279 @@
+{
+  "name": "Cellbaserad fabrik",
+  "metersPerUnit": 0.1,
+  "nodes": [
+    {
+      "id": "C1A",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "C1B",
+      "x": 40,
+      "y": 0
+    },
+    {
+      "id": "C1C",
+      "x": 40,
+      "y": 40
+    },
+    {
+      "id": "C1D",
+      "x": 0,
+      "y": 40
+    },
+    {
+      "id": "C2A",
+      "x": 80,
+      "y": 0
+    },
+    {
+      "id": "C2B",
+      "x": 120,
+      "y": 0
+    },
+    {
+      "id": "C2C",
+      "x": 120,
+      "y": 40
+    },
+    {
+      "id": "C2D",
+      "x": 80,
+      "y": 40
+    },
+    {
+      "id": "C3A",
+      "x": 160,
+      "y": 0
+    },
+    {
+      "id": "C3B",
+      "x": 200,
+      "y": 0
+    },
+    {
+      "id": "C3C",
+      "x": 200,
+      "y": 40
+    },
+    {
+      "id": "C3D",
+      "x": 160,
+      "y": 40
+    },
+    {
+      "id": "C4A",
+      "x": 240,
+      "y": 0
+    },
+    {
+      "id": "C4B",
+      "x": 280,
+      "y": 0
+    },
+    {
+      "id": "C4C",
+      "x": 280,
+      "y": 40
+    },
+    {
+      "id": "C4D",
+      "x": 240,
+      "y": 40
+    },
+    {
+      "id": "PARK1",
+      "x": -40,
+      "y": 0
+    },
+    {
+      "id": "PARK2",
+      "x": -40,
+      "y": 40
+    }
+  ],
+  "edges": [
+    {
+      "from": "C1A",
+      "to": "C1B"
+    },
+    {
+      "from": "C1B",
+      "to": "C1C"
+    },
+    {
+      "from": "C1C",
+      "to": "C1D"
+    },
+    {
+      "from": "C1D",
+      "to": "C1A"
+    },
+    {
+      "from": "C1B",
+      "to": "C2A"
+    },
+    {
+      "from": "C2A",
+      "to": "C2B"
+    },
+    {
+      "from": "C2B",
+      "to": "C2C"
+    },
+    {
+      "from": "C2C",
+      "to": "C2D"
+    },
+    {
+      "from": "C2D",
+      "to": "C2A"
+    },
+    {
+      "from": "C2C",
+      "to": "C3A"
+    },
+    {
+      "from": "C3A",
+      "to": "C3B"
+    },
+    {
+      "from": "C3B",
+      "to": "C3C"
+    },
+    {
+      "from": "C3C",
+      "to": "C3D"
+    },
+    {
+      "from": "C3D",
+      "to": "C3A"
+    },
+    {
+      "from": "C3B",
+      "to": "C4A"
+    },
+    {
+      "from": "C4A",
+      "to": "C4B"
+    },
+    {
+      "from": "C4B",
+      "to": "C4C"
+    },
+    {
+      "from": "C4C",
+      "to": "C4D"
+    },
+    {
+      "from": "C4D",
+      "to": "C4A"
+    },
+    {
+      "from": "PARK1",
+      "to": "C1A"
+    },
+    {
+      "from": "PARK2",
+      "to": "C1D"
+    }
+  ],
+  "stations": [
+    {
+      "id": "GODS",
+      "name": "Gods",
+      "kind": "receiving",
+      "node": "C1A",
+      "processSeconds": 20
+    },
+    {
+      "id": "RAV",
+      "name": "Råvarulager",
+      "kind": "rawstore",
+      "node": "C1C",
+      "processSeconds": 20
+    },
+    {
+      "id": "SAG",
+      "name": "Såg",
+      "kind": "saw",
+      "node": "C2A",
+      "processSeconds": 90
+    },
+    {
+      "id": "HYV",
+      "name": "Hyvel",
+      "kind": "planer",
+      "node": "C2B",
+      "processSeconds": 70
+    },
+    {
+      "id": "CNC",
+      "name": "CNC",
+      "kind": "cnc",
+      "node": "C2C",
+      "processSeconds": 110
+    },
+    {
+      "id": "SLIP",
+      "name": "Slip",
+      "kind": "sander",
+      "node": "C2D",
+      "processSeconds": 60
+    },
+    {
+      "id": "LACK",
+      "name": "Lackering",
+      "kind": "paint",
+      "node": "C3A",
+      "processSeconds": 150
+    },
+    {
+      "id": "BUF",
+      "name": "Mellanlager",
+      "kind": "buffer",
+      "node": "C3B",
+      "processSeconds": 10
+    },
+    {
+      "id": "MONA",
+      "name": "Montering A",
+      "kind": "assembly",
+      "node": "C3C",
+      "processSeconds": 130
+    },
+    {
+      "id": "MONB",
+      "name": "Montering B",
+      "kind": "assembly",
+      "node": "C3D",
+      "processSeconds": 130
+    },
+    {
+      "id": "KVAL",
+      "name": "Kvalitetskontroll",
+      "kind": "qc",
+      "node": "C4A",
+      "processSeconds": 40
+    },
+    {
+      "id": "PACK",
+      "name": "Packning",
+      "kind": "pack",
+      "node": "C4B",
+      "processSeconds": 60
+    },
+    {
+      "id": "FARD",
+      "name": "Färdigvarulager",
+      "kind": "finished",
+      "node": "C4C",
+      "processSeconds": 10
+    }
+  ],
+  "parkingNodes": [
+    "PARK1",
+    "PARK2"
+  ]
+}

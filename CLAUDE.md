@@ -53,7 +53,8 @@ Prototypen `prototype/nordform-map.html` körs direkt i webbläsaren, utan bygge
 - NF-013/NF-014 är klara: `Station` kan ha `Capacity` och `ChangeoverSeconds` (default obegränsat/0, bakåtkompatibelt), och motorn har `SetStationDown` och `SetTruckBroken` utöver den sedan tidigare befintliga `SetCorridorBlocked`. Beskrivet i PR-0008. Inga datafiler i `data/` använder ännu de nya fälten.
 - NF-030/NF-031 är klara: situationer i `data/scenario-tests/*.json` körs av `ScenarioTests`, och `PropertyTests` har fyra egenskaper med paketet `FsCheck.Xunit` (nu installerat i `Nordform.Sim.Core.Tests`). Beskrivet i PR-0007.
 - NF-032 är klar: `data/regression-baseline.json` plus `RegressionBaselineTests` larmar om en ändring gör ett scenario/strategi-par sämre än en känd körning. Beskrivet i PR-0008. Baslinjen måste uppdateras manuellt vid en avsiktlig beteendeändring.
-- Tavlans P1-kö är tom. Kvar på P2 utan designval: NF-070. Kräver designval: SignalR-ström (NF-050), webbvisare (NF-060, beror på NF-050). P3 kräver i stort sett alla designval (OR-Tools, layouteditor, m.m.). Fråga användaren innan du väljer något av dessa.
+- NF-070 är klar: fyra nya layouter (`cell-based`, `job-shop`, `hub-and-spokes`, `bad-layout`) i `data/layouts/`, alla körbara med `furniture-products` och befintliga scenarier. Beskrivet i PR-0009.
+- Tavlans P1- och P2-kö utan designval är tom. Kvar på P2: SignalR-ström (NF-050) och webbvisare (NF-060, beror på NF-050), båda kräver designval (ramverk, strömningsprotokoll). P3 kräver i stort sett alla designval (OR-Tools, layouteditor, m.m.). Fråga användaren innan du väljer något av dessa.
 
 ## Känt och uppskjutet
 

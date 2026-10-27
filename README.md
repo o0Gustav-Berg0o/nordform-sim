@@ -104,7 +104,6 @@ _Inget just nu._
 
 - [ ] **NF-050** `[api]` SignalR-ström av simuleringstillstånd. (M, beror på NF-010)
 - [ ] **NF-060** `[web]` Visare i React eller Angular som ritar kartan från layoutfilen. (L, beror på NF-050)
-- [ ] **NF-070** `[data]` Fler kartor: cellbaserad, job shop, hub och spokes, dålig layout med avsikt. (M)
 
 ### Senare (P3)
 
@@ -139,6 +138,7 @@ _Inget just nu._
 - [x] **NF-030** `[test]` Scenariotester: situationer i `data/scenario-tests/*.json` med förväntat beteende.
 - [x] **NF-031** `[test]` Egenskapstester med FsCheck: inga delade uppdrag, WIP alltid ≥ 0, order alltid aktiva eller levererade, mätvärden inom rimliga gränser.
 - [x] **NF-032** `[test]` Regressionsbaslinje i `data/regression-baseline.json`: larmar om ett scenario/strategi-par blir sämre (färre order, längre väntan) än en känd körning.
+- [x] **NF-070** `[data]` Fler kartor: `cell-based`, `job-shop`, `hub-and-spokes`, `bad-layout`.
 
 ## Arbetssätt
 

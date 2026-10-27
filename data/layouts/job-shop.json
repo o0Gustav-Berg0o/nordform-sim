@@ -1,0 +1,300 @@
+{
+  "name": "Job shop med flera lika maskiner",
+  "metersPerUnit": 0.1,
+  "nodes": [
+    {
+      "id": "R0C0",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "R0C1",
+      "x": 50,
+      "y": 0
+    },
+    {
+      "id": "R0C2",
+      "x": 100,
+      "y": 0
+    },
+    {
+      "id": "R0C3",
+      "x": 150,
+      "y": 0
+    },
+    {
+      "id": "R0C4",
+      "x": 200,
+      "y": 0
+    },
+    {
+      "id": "R1C0",
+      "x": 0,
+      "y": 50
+    },
+    {
+      "id": "R1C1",
+      "x": 50,
+      "y": 50
+    },
+    {
+      "id": "R1C2",
+      "x": 100,
+      "y": 50
+    },
+    {
+      "id": "R1C3",
+      "x": 150,
+      "y": 50
+    },
+    {
+      "id": "R1C4",
+      "x": 200,
+      "y": 50
+    },
+    {
+      "id": "R2C0",
+      "x": 0,
+      "y": 100
+    },
+    {
+      "id": "R2C1",
+      "x": 50,
+      "y": 100
+    },
+    {
+      "id": "R2C2",
+      "x": 100,
+      "y": 100
+    },
+    {
+      "id": "R2C3",
+      "x": 150,
+      "y": 100
+    },
+    {
+      "id": "R2C4",
+      "x": 200,
+      "y": 100
+    },
+    {
+      "id": "PARK1",
+      "x": -50,
+      "y": 0
+    },
+    {
+      "id": "PARK2",
+      "x": 250,
+      "y": 100
+    }
+  ],
+  "edges": [
+    {
+      "from": "R0C0",
+      "to": "R0C1"
+    },
+    {
+      "from": "R0C0",
+      "to": "R1C0"
+    },
+    {
+      "from": "R0C1",
+      "to": "R0C2"
+    },
+    {
+      "from": "R0C1",
+      "to": "R1C1"
+    },
+    {
+      "from": "R0C2",
+      "to": "R0C3"
+    },
+    {
+      "from": "R0C2",
+      "to": "R1C2"
+    },
+    {
+      "from": "R0C3",
+      "to": "R0C4"
+    },
+    {
+      "from": "R0C3",
+      "to": "R1C3"
+    },
+    {
+      "from": "R0C4",
+      "to": "R1C4"
+    },
+    {
+      "from": "R1C0",
+      "to": "R1C1"
+    },
+    {
+      "from": "R1C0",
+      "to": "R2C0"
+    },
+    {
+      "from": "R1C1",
+      "to": "R1C2"
+    },
+    {
+      "from": "R1C1",
+      "to": "R2C1"
+    },
+    {
+      "from": "R1C2",
+      "to": "R1C3"
+    },
+    {
+      "from": "R1C2",
+      "to": "R2C2"
+    },
+    {
+      "from": "R1C3",
+      "to": "R1C4"
+    },
+    {
+      "from": "R1C3",
+      "to": "R2C3"
+    },
+    {
+      "from": "R1C4",
+      "to": "R2C4"
+    },
+    {
+      "from": "R2C0",
+      "to": "R2C1"
+    },
+    {
+      "from": "R2C1",
+      "to": "R2C2"
+    },
+    {
+      "from": "R2C2",
+      "to": "R2C3"
+    },
+    {
+      "from": "R2C3",
+      "to": "R2C4"
+    },
+    {
+      "from": "PARK1",
+      "to": "R0C0"
+    },
+    {
+      "from": "PARK2",
+      "to": "R2C4"
+    }
+  ],
+  "stations": [
+    {
+      "id": "GODS",
+      "name": "Gods",
+      "kind": "receiving",
+      "node": "R0C0",
+      "processSeconds": 20
+    },
+    {
+      "id": "RAV",
+      "name": "Råvarulager",
+      "kind": "rawstore",
+      "node": "R0C1",
+      "processSeconds": 20
+    },
+    {
+      "id": "SAG1",
+      "name": "Såg 1",
+      "kind": "saw",
+      "node": "R0C2",
+      "processSeconds": 90
+    },
+    {
+      "id": "SAG2",
+      "name": "Såg 2",
+      "kind": "saw",
+      "node": "R0C3",
+      "processSeconds": 90
+    },
+    {
+      "id": "HYV",
+      "name": "Hyvel",
+      "kind": "planer",
+      "node": "R0C4",
+      "processSeconds": 70
+    },
+    {
+      "id": "CNC1",
+      "name": "CNC 1",
+      "kind": "cnc",
+      "node": "R1C0",
+      "processSeconds": 110
+    },
+    {
+      "id": "CNC2",
+      "name": "CNC 2",
+      "kind": "cnc",
+      "node": "R1C1",
+      "processSeconds": 110
+    },
+    {
+      "id": "SLIP",
+      "name": "Slip",
+      "kind": "sander",
+      "node": "R1C2",
+      "processSeconds": 60
+    },
+    {
+      "id": "LACK",
+      "name": "Lackering",
+      "kind": "paint",
+      "node": "R1C3",
+      "processSeconds": 150
+    },
+    {
+      "id": "BUF",
+      "name": "Mellanlager",
+      "kind": "buffer",
+      "node": "R1C4",
+      "processSeconds": 10
+    },
+    {
+      "id": "MONA",
+      "name": "Montering A",
+      "kind": "assembly",
+      "node": "R2C0",
+      "processSeconds": 130
+    },
+    {
+      "id": "MONB",
+      "name": "Montering B",
+      "kind": "assembly",
+      "node": "R2C1",
+      "processSeconds": 130
+    },
+    {
+      "id": "KVAL",
+      "name": "Kvalitetskontroll",
+      "kind": "qc",
+      "node": "R2C2",
+      "processSeconds": 40
+    },
+    {
+      "id": "PACK",
+      "name": "Packning",
+      "kind": "pack",
+      "node": "R2C3",
+      "processSeconds": 60
+    },
+    {
+      "id": "FARD",
+      "name": "Färdigvarulager",
+      "kind": "finished",
+      "node": "R2C4",
+      "processSeconds": 10
+    }
+  ],
+  "parkingNodes": [
+    "PARK1",
+    "PARK2"
+  ]
+}

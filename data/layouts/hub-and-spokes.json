@@ -1,0 +1,229 @@
+{
+  "name": "Hub och spakar",
+  "metersPerUnit": 0.1,
+  "nodes": [
+    {
+      "id": "HUB",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "GODS",
+      "x": 150.0,
+      "y": 0.0
+    },
+    {
+      "id": "RAV",
+      "x": 129.9,
+      "y": 75.0
+    },
+    {
+      "id": "SAG",
+      "x": 75.0,
+      "y": 129.9
+    },
+    {
+      "id": "HYV",
+      "x": 0.0,
+      "y": 150.0
+    },
+    {
+      "id": "CNC",
+      "x": -75.0,
+      "y": 129.9
+    },
+    {
+      "id": "SLIP",
+      "x": -129.9,
+      "y": 75.0
+    },
+    {
+      "id": "LACK",
+      "x": -150.0,
+      "y": 0.0
+    },
+    {
+      "id": "BUF",
+      "x": -129.9,
+      "y": -75.0
+    },
+    {
+      "id": "MONA",
+      "x": -75.0,
+      "y": -129.9
+    },
+    {
+      "id": "KVAL",
+      "x": -0.0,
+      "y": -150.0
+    },
+    {
+      "id": "PACK",
+      "x": 75.0,
+      "y": -129.9
+    },
+    {
+      "id": "FARD",
+      "x": 129.9,
+      "y": -75.0
+    },
+    {
+      "id": "PARK1",
+      "x": 0,
+      "y": 200
+    },
+    {
+      "id": "PARK2",
+      "x": 0,
+      "y": -200
+    }
+  ],
+  "edges": [
+    {
+      "from": "HUB",
+      "to": "GODS"
+    },
+    {
+      "from": "HUB",
+      "to": "RAV"
+    },
+    {
+      "from": "HUB",
+      "to": "SAG"
+    },
+    {
+      "from": "HUB",
+      "to": "HYV"
+    },
+    {
+      "from": "HUB",
+      "to": "CNC"
+    },
+    {
+      "from": "HUB",
+      "to": "SLIP"
+    },
+    {
+      "from": "HUB",
+      "to": "LACK"
+    },
+    {
+      "from": "HUB",
+      "to": "BUF"
+    },
+    {
+      "from": "HUB",
+      "to": "MONA"
+    },
+    {
+      "from": "HUB",
+      "to": "KVAL"
+    },
+    {
+      "from": "HUB",
+      "to": "PACK"
+    },
+    {
+      "from": "HUB",
+      "to": "FARD"
+    },
+    {
+      "from": "HUB",
+      "to": "PARK1"
+    },
+    {
+      "from": "HUB",
+      "to": "PARK2"
+    }
+  ],
+  "stations": [
+    {
+      "id": "GODS",
+      "name": "Gods",
+      "kind": "receiving",
+      "node": "GODS",
+      "processSeconds": 20
+    },
+    {
+      "id": "RAV",
+      "name": "Råvarulager",
+      "kind": "rawstore",
+      "node": "RAV",
+      "processSeconds": 20
+    },
+    {
+      "id": "SAG",
+      "name": "Såg",
+      "kind": "saw",
+      "node": "SAG",
+      "processSeconds": 90
+    },
+    {
+      "id": "HYV",
+      "name": "Hyvel",
+      "kind": "planer",
+      "node": "HYV",
+      "processSeconds": 70
+    },
+    {
+      "id": "CNC",
+      "name": "CNC",
+      "kind": "cnc",
+      "node": "CNC",
+      "processSeconds": 110
+    },
+    {
+      "id": "SLIP",
+      "name": "Slip",
+      "kind": "sander",
+      "node": "SLIP",
+      "processSeconds": 60
+    },
+    {
+      "id": "LACK",
+      "name": "Lackering",
+      "kind": "paint",
+      "node": "LACK",
+      "processSeconds": 150
+    },
+    {
+      "id": "BUF",
+      "name": "Mellanlager",
+      "kind": "buffer",
+      "node": "BUF",
+      "processSeconds": 10
+    },
+    {
+      "id": "MONA",
+      "name": "Montering",
+      "kind": "assembly",
+      "node": "MONA",
+      "processSeconds": 130
+    },
+    {
+      "id": "KVAL",
+      "name": "Kvalitetskontroll",
+      "kind": "qc",
+      "node": "KVAL",
+      "processSeconds": 40
+    },
+    {
+      "id": "PACK",
+      "name": "Packning",
+      "kind": "pack",
+      "node": "PACK",
+      "processSeconds": 60
+    },
+    {
+      "id": "FARD",
+      "name": "Färdigvarulager",
+      "kind": "finished",
+      "node": "FARD",
+      "processSeconds": 10
+    }
+  ],
+  "parkingNodes": [
+    "PARK1",
+    "PARK2"
+  ]
+}
