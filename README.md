@@ -33,12 +33,12 @@ dotnet build
 dotnet test
 dotnet run --project src/Nordform.Sim.Cli            # kör alla tre strategier på normal-day och skriver en jämförelse
 dotnet run --project src/Nordform.Sim.Cli -- batch data out   # alla scenarier × tre seeds × tre strategier, CSV och JSON
-dotnet run --project src/Nordform.Sim.Api            # /health och /strategies
+dotnet run --project src/Nordform.Sim.Api            # /health, /strategies, /layouts, /products, /scenarios, /simulations
 ```
 
 Prototypen av kartan körs direkt i webbläsaren, utan bygge: öppna `prototype/nordform-map.html`.
 
-> Status: `dotnet build` och `dotnet test` är körda och gröna (NF-005): 0 fel, 0 varningar, 25 av 25 tester passerar.
+> Status: `dotnet build` och `dotnet test` är körda och gröna: 0 fel, 0 varningar, 76 av 76 tester passerar.
 
 ## Teknikstack
 
@@ -46,8 +46,8 @@ Prototypen av kartan körs direkt i webbläsaren, utan bygge: öppna `prototype/
 |---|---|
 | Simuleringskärna | C# / .NET 10, class library utan UI-beroenden |
 | Planeringsmetoder | Gränssnittet `IDispatchStrategy`, senare Google OR-Tools |
-| Test | xUnit, senare FsCheck för egenskapstester och JSON-scenarier |
-| API | ASP.NET Core minimal API, senare SignalR för live-ström |
+| Test | xUnit, FsCheck för egenskapstester, JSON-scenarier |
+| API | ASP.NET Core minimal API, SignalR för live-ström (`/hub/simulation`) |
 | Frontend | React eller Angular med SVG eller Canvas (prototypen är ren SVG) |
 | Lagring | SQLite eller SQL Server för scenarier och körresultat (senare) |
 | CI och drift | Azure DevOps eller GitHub Actions, Azure Container Apps för demon |
@@ -102,7 +102,6 @@ _Inget just nu._
 
 ### Backlog (P2)
 
-- [ ] **NF-050** `[api]` SignalR-ström av simuleringstillstånd. (M, beror på NF-010)
 - [ ] **NF-060** `[web]` Visare i React eller Angular som ritar kartan från layoutfilen. (L, beror på NF-050)
 
 ### Senare (P3)
@@ -139,6 +138,7 @@ _Inget just nu._
 - [x] **NF-031** `[test]` Egenskapstester med FsCheck: inga delade uppdrag, WIP alltid ≥ 0, order alltid aktiva eller levererade, mätvärden inom rimliga gränser.
 - [x] **NF-032** `[test]` Regressionsbaslinje i `data/regression-baseline.json`: larmar om ett scenario/strategi-par blir sämre (färre order, längre väntan) än en känd körning.
 - [x] **NF-070** `[data]` Fler kartor: `cell-based`, `job-shop`, `hub-and-spokes`, `bad-layout`.
+- [x] **NF-050** `[api]` SignalR-ström av simuleringstillstånd: `POST /simulations`, `GET /simulations/{id}`, `POST /simulations/{id}/stop`, hubb på `/hub/simulation`.
 
 ## Arbetssätt
 

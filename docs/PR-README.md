@@ -563,7 +563,61 @@ Ingen påverkan på `furniture-line` eller befintliga mätvärden. Bara nya data
 - [x] Tavlan i README är uppdaterad
 - [x] Ingen verklig kunddata i ändringen
 
-## PR-0010: Stationskapacitet, omställningstid och störningar (NF-013, NF-014)
+## PR-0010: SignalR-ström av simuleringstillstånd (NF-050)
+
+Ärenden på tavlan: NF-050.
+
+### Sammanfattning
+
+Lägger till `/hub/simulation`, en SignalR-hubb som strömmar truckpositioner och mätvärden för en körande simulering. Tre nya HTTP-endpoints styr sessionen: `POST /simulations` startar en, `GET /simulations/{id}` läser senaste tillståndet, `POST /simulations/{id}/stop` stoppar den.
+
+### Motivering
+
+API:et (NF-051) kunde bara läsa statiska data. Webbvisaren (NF-060) behöver se simuleringen röra sig i realtid, inte bara layouten. NF-050 bygger den strömmen, oberoende av vilken frontend som sedan ansluter.
+
+### Ändringar
+
+**api**
+- `SimulationHub.cs`: SignalR-hubb med `JoinSession`/`LeaveSession` för att gå med i en grupp per sessions-id.
+- `SimulationBroadcaster.cs`: `ISimulationBroadcaster` (och `SignalRSimulationBroadcaster` som skickar till hubbens grupper) samt `SimulationSnapshot` (tid, truckar, mätvärden). Ett eget gränssnitt istället för att använda `IHubContext` direkt gör det möjligt att testa sessionslogiken utan en riktig anslutning.
+- `SimulationSessionManager.cs`: håller körande sessioner i en `ConcurrentDictionary`, kör var och en i sin egen bakgrundstask (`Engine.RunFor` + skicka tillstånd + vänta, upprepat tills scenariots varaktighet är nådd eller sessionen stoppas).
+- `Program.cs`: registrerar SignalR, hubben på `/hub/simulation`, och de tre nya endpoints. Strategi väljs med `"fifo"`, `"nearest"` eller `"urgent"`.
+
+**test**
+- `SimulationSessionManagerTests.cs`: enhetstester mot en `FakeBroadcaster` (ingen SignalR inblandad) — en session strömmar tillstånd och avslutas vid scenariots slut, en stoppad session avslutas tidigt, ett okänt sessions-id ger `false`.
+- `SimulationEndpointsTests.cs`: integrationstester via `WebApplicationFactory` — starta/läsa/stoppa en session över HTTP, 404/400 för okänd layout/strategi, och ett `Microsoft.AspNetCore.SignalR.Client`-test som faktiskt ansluter till hubben och väntar in minst ett `state`-meddelande.
+
+### Så testar du
+
+```bash
+dotnet test
+dotnet run --project src/Nordform.Sim.Api
+curl -X POST http://localhost:5000/simulations -H "Content-Type: application/json" \
+  -d '{"layoutId":"furniture-line","productsId":"furniture-products","scenarioId":"normal-day","strategy":"nearest"}'
+```
+
+76 av 76 tester gröna (54 Core, 19 Api, 3 Cli).
+
+### Resultat
+
+Ingen påverkan på simuleringens kod eller befintliga mätvärden. Bara en ny, valfri strömningsväg ovanpå samma `SimulationEngine`.
+
+### Risker och begränsningar
+
+- Varje session kör i realtid (styrd av `speed` och ett 0,5 sekunders tick som standard), inte så fort datorn klarar. Det är avsiktligt för en levande karta, men gör batchkörningar olämpliga via den här vägen (använd CLI:ns batchläge, NF-040, för det).
+- Ingen gräns på hur många sessioner som får vara igång samtidigt, och ingen autentisering. Fine för en lokal demo, inte för produktion.
+- En krashad bakgrundstask (ett oväntat undantag i `RunAsync`) loggas inte någonstans ännu; sessionen bara försvinner tyst ur listan.
+
+### Checklista
+
+- [x] Bygger utan varningar
+- [x] Alla tester passerar (76 totalt)
+- [x] Nya tester för ny logik
+- [x] Samma seed ger samma resultat (ej tillämpligt, ingen ändring i motorn)
+- [x] Tavlan i README är uppdaterad
+- [x] Ingen verklig kunddata i ändringen
+
+## PR-0011: Stationskapacitet, omställningstid och störningar (NF-013, NF-014)
 
 Ärenden på tavlan: NF-013, NF-014.
 
