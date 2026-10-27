@@ -97,7 +97,6 @@ Den här listan är projektets issue-tavla. Varje rad är ett ärende.
 
 ### Nästa (P1)
 
-- [ ] **NF-016** `[core]` Jämför motorns resultat med webbprototypen för samma seed och förklara skillnaderna (produktmix och stationsval drar slumptal i annan ordning). (S, beror på NF-005)
 - [ ] **NF-040** `[cli]` Batchrunner som kör strategier × scenarier × seeds och skriver CSV och JSON. Första versionen finns i CLI:n, men skriver bara en tabell. (M, beror på NF-005)
 
 ### Backlog (P2)
@@ -137,6 +136,7 @@ Den här listan är projektets issue-tavla. Varje rad är ett ärende.
 - [x] **NF-011** `[core]` Truckens tillståndsmaskin: ledig, till hämtning, lastar, levererar, lossar, parkerar.
 - [x] **NF-012** `[core]` Skapa order ur produktmix och arbetsplan, med val mellan alternativa stationer (Montering A eller B).
 - [x] **NF-015** `[core]` Mätvärden: tomkörning, snittväntan, sträcka, kö, utnyttjande, levererade order. `SimulationMetrics`.
+- [x] **NF-016** `[core]` Jämfört motorns resultat med webbprototypen för samma seed. Nära men inte identiska tal: motorn drar ett extra slumptal per order för produktval, vilket skjuter talföljden.
 
 ## Arbetssätt
 

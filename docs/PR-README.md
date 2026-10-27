@@ -188,3 +188,70 @@ Motorn är ny, så det finns inga tidigare siffror att jämföra mot. Utskrift f
 - [x] Samma seed ger samma resultat (testat i `EngineTests`)
 - [x] Tavlan i README är uppdaterad
 - [x] Ingen verklig kunddata i ändringen
+
+---
+
+## PR-0003: Jämförelse motor mot webbprototyp (NF-016)
+
+Ärenden på tavlan: NF-016.
+
+### Sammanfattning
+
+Jämför `SimulationEngine`:s mätvärden med webbprototypens, samma seed (4217), scenario (Normal dag) och planeringsmetoder. Ingen kodändring: det här är dokumentation av en jämförelse och en förklaring av varför talen inte är identiska.
+
+### Motivering
+
+NF-010 porterade motorn från prototypen, men de två implementationerna har aldrig körts sida vid sida. Innan motorn blir den källa som används för att jämföra planeringsmetoder måste skillnaden mot prototypen vara förklarad, så att den inte förväxlas med en bugg.
+
+### Ändringar
+
+- Ingen kod. Körresultat och förklaring tillagda här i docs/PR-README.md, tavlan i README.md uppdaterad.
+
+### Så testar du
+
+```bash
+dotnet run --project src/Nordform.Sim.Cli
+```
+
+Öppna `prototype/nordform-map.html`, välj scenario "Normal dag" och klicka "Kör alla tre (30 min)" under "Jämför planering".
+
+### Resultat
+
+Seed 4217, scenario Normal dag, 30 min simulerad tid, samma tre strategier.
+
+**Webbprototyp** (`prototype/nordform-map.html`):
+
+| Metod | Tomkörning | Snittväntan | Order | Sträcka |
+|---|---|---|---|---|
+| Äldsta först | 63 % | 9 s | 26 | 17,92 km |
+| Närmaste | 63 % | 9 s | 25 | 17,60 km |
+| Brådskande först | 63 % | 9 s | 25 | 17,91 km |
+
+**Motor** (`dotnet run --project src/Nordform.Sim.Cli`, se även PR-0002):
+
+| Metod | Tomkörning | Snittväntan | Order | Sträcka |
+|---|---|---|---|---|
+| Äldsta uppdrag först | 66 % | 11 s | 25 | 18,00 km |
+| Närmaste uppdrag | 65 % | 10 s | 26 | 18,15 km |
+| Brådskande först | 65 % | 10 s | 26 | 18,15 km |
+
+Talen ligger nära varandra (tomkörning inom 3 procentenheter, sträcka inom 2 %) men är inte identiska, trots samma seed. Det beror på att de två implementationerna drar slumptal i olika ordning:
+
+- **En extra dragning per order.** Prototypen har bara ett implicit produktflöde och drar ett tal per skapad order (brådskande eller inte). Motorn stödjer flera produkter med egna arbetsplaner (`furniture-products.json`) och drar först ett tal för att välja produkt (`PickProduct`), sedan ett för brådskande. Den extra dragningen skjuter alla efterföljande tal i talföljden ett steg, för varje order som skapas under hela körningen.
+- **Samma mekanik för stationsval vid lika last.** Både motor och prototyp drar ett tal när Montering A och B har lika last (`ChooseStation` respektive `pickMon`), men eftersom ordningen redan har glidit isär av punkten ovan hamnar även de dragningarna på olika ställen i talföljden.
+- Nettoeffekten är att varje order kan bli brådskande eller inte, få en annan behandlingstid, och ett annat val mellan Montering A/B, jämfört med prototypen för "samma" order-nummer. Över en 30-minuterskörning med dussintals order blir det små men synliga skillnader i de sammanlagda mätvärdena, utan att någon av implementationerna är fel.
+- Determinism håller inom varje implementation för sig: samma seed ger samma resultat i motorn (se `EngineTests`) och i prototypen.
+
+### Risker och begränsningar
+
+- Prototypens mätvärden lästes av manuellt i webbläsaren och är inte automatiserat testade. En framtida regressionsbaslinje (NF-032) bör utgå från motorns egna siffror, inte prototypens.
+- Skillnaden i dragordning är inte buggfixad här. Att synka talföljderna exakt (t.ex. genom att alltid dra produktval även när bara en produkt finns) skulle göra jämförelsen enklare men är inte värt att låsa fast motorns design efter prototypens begränsningar.
+
+### Checklista
+
+- [x] Bygger utan varningar
+- [x] Alla tester passerar
+- [x] Nya tester för ny logik (ej tillämpligt, ingen kodändring)
+- [x] Samma seed ger samma resultat
+- [x] Tavlan i README är uppdaterad
+- [x] Ingen verklig kunddata i ändringen

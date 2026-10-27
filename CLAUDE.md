@@ -45,7 +45,8 @@ Prototypen `prototype/nordform-map.html` körs direkt i webbläsaren, utan bygge
 ## Nuläge
 
 - NF-005 är klart: `dotnet build` och `dotnet test` är gröna (0 fel, 0 varningar, 25 av 25 tester), CLI:n körd och resultattabellen i PR-0002 ifylld.
-- Nästa uppgift är NF-016: jämför motorn med prototypen för samma seed. Slumptalen dras i en annan ordning, så siffrorna blir inte identiska och skillnaden ska förklaras.
+- NF-016 är klart: motorns resultat jämfört med webbprototypen för samma seed (4217, Normal dag). Talen ligger nära men är inte identiska eftersom motorn drar ett extra slumptal per order (produktval), vilket skjuter talföljden. Förklaringen finns i PR-0003.
+- Nästa uppgift på tavlan är NF-040 (batchrunner för CSV/JSON).
 
 ## Känt och uppskjutet
 
