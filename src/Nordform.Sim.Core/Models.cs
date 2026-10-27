@@ -7,7 +7,14 @@ public sealed record Node(string Id, double X, double Y);
 public sealed record Edge(string From, string To, bool Blocked = false);
 
 /// <summary>Station med en dockningsnod där pallar hämtas och lämnas.</summary>
-public sealed record Station(string Id, string Name, string Kind, string Node, double ProcessSeconds);
+public sealed record Station(
+    string Id,
+    string Name,
+    string Kind,
+    string Node,
+    double ProcessSeconds,
+    int? Capacity = null,
+    double ChangeoverSeconds = 0);
 
 public sealed record Layout(
     string Name,

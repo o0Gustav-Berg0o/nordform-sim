@@ -50,10 +50,11 @@ Prototypen `prototype/nordform-map.html` körs direkt i webbläsaren, utan bygge
 - NF-040 är klart: CLI:n har ett batchläge (`dotnet run --project src/Nordform.Sim.Cli -- batch`) som skriver CSV och JSON för alla scenarier × tre seeds × tre strategier. Beskrivet i PR-0004.
 - NF-051 är klart: `Nordform.Sim.Api` har `/layouts`, `/products` och `/scenarios` (lista och läsa enskilt id), med skydd mot path traversal. Beskrivet i PR-0005.
 - NF-080 är klart: `.github/workflows/ci.yml` kör `dotnet build` och `dotnet test` på push och pull request mot main. Beskrivet i PR-0006.
-- Tavlans P1-kö är tom. Allt kvar är P2/P3-backlog som kräver designval: OR-Tools (NF-020), SignalR-ström (NF-050), webbvisare (NF-060), fler kartor (NF-070) och liknande. Fråga användaren innan du väljer något av dessa.
+- NF-013/NF-014 är klara: `Station` kan ha `Capacity` och `ChangeoverSeconds` (default obegränsat/0, bakåtkompatibelt), och motorn har `SetStationDown` och `SetTruckBroken` utöver den sedan tidigare befintliga `SetCorridorBlocked`. Beskrivet i PR-0007. Inga datafiler i `data/` använder ännu de nya fälten.
+- Tavlans P1-kö är tom. Kvar på P2 utan designval: NF-030, NF-031 (kräver NuGet-paketet FsCheck, inte installerat än), NF-032, NF-070. Kräver designval: SignalR-ström (NF-050), webbvisare (NF-060, beror på NF-050). P3 kräver i stort sett alla designval (OR-Tools, layouteditor, m.m.). Fråga användaren innan du väljer något av dessa.
 
 ## Känt och uppskjutet
 
 - Truckar kolliderar inte och följer inga trafikregler.
-- Stationer har obegränsad kapacitet och ingen omställningstid (NF-013).
 - En truck på väg till parkering räknas i strategin från nästa nod på vägen, inte från sin exakta position.
+- En order som aldrig får plats på en full/avstängd station köar obegränsat (inget dödlägesskydd).

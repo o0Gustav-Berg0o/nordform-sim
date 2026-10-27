@@ -29,7 +29,7 @@ public sealed record TruckSnapshot(int Id, double X, double Y, string Node, Truc
 /// </summary>
 public sealed class SimulationEngine
 {
-    private enum PalletState { Processing, Waiting, Carried, Gone }
+    private enum PalletState { Processing, Waiting, Carried, Gone, Blocked }
 
     private sealed class Pallet
     {
@@ -84,6 +84,10 @@ public sealed class SimulationEngine
     private readonly Dictionary<string, Product> _products;
     private readonly List<(string Id, double Weight)> _mix;
     private readonly Dictionary<string, int> _wip = new();
+    private readonly Dictionary<string, string?> _lastProduct = new();
+    private readonly HashSet<string> _downStations = new();
+    private readonly HashSet<int> _brokenTrucks = new();
+    private readonly List<Product> _pendingOrders = new();
     private readonly List<Pallet> _pallets = new();
     private readonly List<Job> _jobs = new();
     private readonly List<Truck> _trucks = new();
@@ -120,7 +124,7 @@ public sealed class SimulationEngine
         _stations = layout.Stations.ToDictionary(s => s.Id);
         _products = products.ToDictionary(p => p.Id);
 
-        foreach (var s in layout.Stations) _wip[s.Id] = 0;
+        foreach (var s in layout.Stations) { _wip[s.Id] = 0; _lastProduct[s.Id] = null; }
 
         _mix = scenario.ProductMix
             .Where(kv => _products.ContainsKey(kv.Key) && kv.Value > 0)
@@ -173,14 +177,24 @@ public sealed class SimulationEngine
 
         while (_time >= _nextSpawn)
         {
-            SpawnOrder();
+            _pendingOrders.Add(PickProduct());
             _nextSpawn += _scenario.OrderIntervalSeconds * (0.7 + 0.6 * _rng.NextDouble());
+        }
+
+        while (_pendingOrders.Count > 0 && TryStartOrder(_pendingOrders[0]))
+            _pendingOrders.RemoveAt(0);
+
+        for (var i = 0; i < _pallets.Count; i++)
+        {
+            var p = _pallets[i];
+            if (p.State == PalletState.Processing && _time >= p.ReadyAt && !_downStations.Contains(p.At))
+                PalletReady(p);
         }
 
         for (var i = 0; i < _pallets.Count; i++)
         {
             var p = _pallets[i];
-            if (p.State == PalletState.Processing && _time >= p.ReadyAt) PalletReady(p);
+            if (p.State == PalletState.Blocked) TryRoute(p);
         }
 
         foreach (var truck in _trucks) UpdateTruck(truck, dt);
@@ -196,6 +210,36 @@ public sealed class SimulationEngine
         {
             var moving = tr.State is TruckState.ToPickup or TruckState.ToDrop or TruckState.Parking;
             if (moving && tr.Path.Count > 0) SetPath(tr, tr.Dest);
+        }
+    }
+
+    /// <summary>Stänger av eller öppnar en station. En avstängd station tar inte emot nya pallar
+    /// och pallar som redan bearbetas där blir kvar tills den öppnas igen.</summary>
+    public void SetStationDown(string stationId, bool down)
+    {
+        if (down) _downStations.Add(stationId);
+        else _downStations.Remove(stationId);
+    }
+
+    /// <summary>Truckhaveri: en trasig truck fryser på plats och släpper sitt uppdrag.
+    /// Uppdraget blir tillgängligt för andra truckar igen.</summary>
+    public void SetTruckBroken(int truckId, bool broken)
+    {
+        var tr = _trucks.FirstOrDefault(t => t.Id == truckId);
+        if (tr is null) return;
+
+        if (broken)
+        {
+            _brokenTrucks.Add(truckId);
+            if (tr.Job is { } job)
+            {
+                job.Assigned = false;
+                tr.Job = null;
+            }
+        }
+        else
+        {
+            _brokenTrucks.Remove(truckId);
         }
     }
 
@@ -216,10 +260,13 @@ public sealed class SimulationEngine
 
     // ---------- order och pallar ----------
 
-    private void SpawnOrder()
+    /// <summary>Försöker starta en order. Misslyckas om alla kandidatstationer är fulla eller avstängda,
+    /// och ordern blir då kvar i kön tills det finns plats.</summary>
+    private bool TryStartOrder(Product product)
     {
-        var product = PickProduct();
         var station = ChooseStation(product.Routing[0].StationKind);
+        if (station is null) return false;
+
         var pallet = new Pallet
         {
             Id = ++_palletSeq,
@@ -233,6 +280,7 @@ public sealed class SimulationEngine
         _wip[station.Id]++;
         _ordersStarted++;
         _pallets.Add(pallet);
+        return true;
     }
 
     private Product PickProduct()
@@ -248,13 +296,19 @@ public sealed class SimulationEngine
         return _products[_mix[^1].Id];
     }
 
-    /// <summary>Väljer den station av rätt typ som har minst last. Vid lika last avgör slumpen.</summary>
-    private Station ChooseStation(string kind)
+    /// <summary>Väljer den station av rätt typ som har minst last, är öppen och har plats kvar.
+    /// Vid lika last avgör slumpen. Null om ingen kandidat har plats.</summary>
+    private Station? ChooseStation(string kind, string? exemptFromCapacity = null)
     {
-        var candidates = _layout.Stations.Where(s => s.Kind == kind).ToList();
+        int Load(Station s) => _wip[s.Id] + _jobs.Count(j => j.ToStation == s.Id);
+        bool HasRoom(Station s) =>
+            !_downStations.Contains(s.Id) &&
+            (s.Id == exemptFromCapacity || s.Capacity is null || Load(s) < s.Capacity.Value);
+
+        var candidates = _layout.Stations.Where(s => s.Kind == kind).Where(HasRoom).ToList();
+        if (candidates.Count == 0) return null;
         if (candidates.Count == 1) return candidates[0];
 
-        int Load(Station s) => _wip[s.Id] + _jobs.Count(j => j.ToStation == s.Id);
         var min = candidates.Min(Load);
         var tied = candidates.Where(s => Load(s) == min).ToList();
         return tied.Count == 1 ? tied[0] : tied[(int)(_rng.NextDouble() * tied.Count)];
@@ -263,10 +317,21 @@ public sealed class SimulationEngine
     private double ProcessTime(Product product, int step, Station station)
     {
         var baseSeconds = product.Routing[step].ProcessSeconds ?? station.ProcessSeconds;
-        return baseSeconds * (0.8 + 0.4 * _rng.NextDouble());
+        var changeover = _lastProduct[station.Id] is { } last && last != product.Id
+            ? station.ChangeoverSeconds
+            : 0;
+        _lastProduct[station.Id] = product.Id;
+        return baseSeconds * (0.8 + 0.4 * _rng.NextDouble()) + changeover;
     }
 
     private void PalletReady(Pallet p)
+    {
+        if (!TryRoute(p)) p.State = PalletState.Blocked;
+    }
+
+    /// <summary>Försöker ta nästa steg i pallens arbetsplan. Returnerar false om nästa station
+    /// är full eller avstängd, så att anroparen kan låta pallen vänta kvar.</summary>
+    private bool TryRoute(Pallet p)
     {
         var last = p.Product.Routing.Count - 1;
         if (p.Step == last)
@@ -274,16 +339,19 @@ public sealed class SimulationEngine
             p.State = PalletState.Gone;
             _wip[p.At]--;
             _shipped++;
-            return;
+            return true;
         }
 
-        var next = ChooseStation(p.Product.Routing[p.Step + 1].StationKind);
+        var next = ChooseStation(p.Product.Routing[p.Step + 1].StationKind, exemptFromCapacity: p.At);
+        if (next is null) return false;
+
         if (next.Id == p.At)
         {
             // Nästa steg sker på samma station, ingen transport behövs.
             p.Step++;
             p.ReadyAt = _time + ProcessTime(p.Product, p.Step, next);
-            return;
+            p.State = PalletState.Processing;
+            return true;
         }
 
         _jobs.Add(new Job
@@ -298,12 +366,15 @@ public sealed class SimulationEngine
             Urgent = p.Urgent,
         });
         p.State = PalletState.Waiting;
+        return true;
     }
 
     // ---------- truckar ----------
 
     private void UpdateTruck(Truck tr, double dt)
     {
+        if (_brokenTrucks.Contains(tr.Id)) return;
+
         if (tr.State is TruckState.Idle or TruckState.Parking) TryAssign(tr);
 
         if (tr.State == TruckState.Idle)

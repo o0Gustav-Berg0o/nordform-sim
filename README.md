@@ -102,8 +102,6 @@ _Inget just nu._
 
 ### Backlog (P2)
 
-- [ ] **NF-013** `[core]` Stationer med kapacitet och omställningstid mellan produkter. (M, beror på NF-012)
-- [ ] **NF-014** `[core]` Störningar: blockerad korridor, truckhaveri, maskinstopp. (M, beror på NF-010)
 - [ ] **NF-030** `[test]` Scenariotester: situation i JSON med förväntat beteende. (M, beror på NF-010)
 - [ ] **NF-031** `[test]` Egenskapstester med FsCheck, till exempel att ingen truck har två uppdrag samtidigt. (M, beror på NF-010)
 - [ ] **NF-032** `[test]` Regressionsbaslinje: spara mätvärden per seed och larma vid försämring. (M, beror på NF-015)
@@ -139,6 +137,8 @@ _Inget just nu._
 - [x] **NF-040** `[cli]` Batchläge (`dotnet run --project src/Nordform.Sim.Cli batch`) som kör alla strategier × scenarier × tre seeds och skriver CSV och JSON till en utmapp.
 - [x] **NF-051** `[api]` Endpoints för att lista och läsa layouter, produkter och scenarier: `GET /layouts`, `/layouts/{id}`, `/products`, `/products/{id}`, `/scenarios`, `/scenarios/{id}`.
 - [x] **NF-080** `[ci]` GitHub Actions-pipeline (`.github/workflows/ci.yml`) som kör `dotnet build` och `dotnet test` vid varje push och pull request mot main.
+- [x] **NF-013** `[core]` Stationer med kapacitet och omställningstid mellan produkter.
+- [x] **NF-014** `[core]` Störningar: blockerad korridor (fanns redan), truckhaveri och maskinstopp (avstängd station).
 
 ## Arbetssätt
 

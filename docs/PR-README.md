@@ -419,3 +419,52 @@ Ingen påverkan på simuleringens mätvärden eller någon befintlig kod.
 - [x] Samma seed ger samma resultat (ej tillämpligt)
 - [x] Tavlan i README är uppdaterad
 - [x] Ingen verklig kunddata i ändringen
+
+## PR-0007: Stationskapacitet, omställningstid och störningar (NF-013, NF-014)
+
+Ärenden på tavlan: NF-013, NF-014.
+
+### Sammanfattning
+
+Stationer kan nu ha en maximal kapacitet och en omställningstid som tillkommer när produkten på stationen byts. Motorn har också fått två nya störningar: en station kan stängas av tillfälligt (`SetStationDown`), och en truck kan haverera (`SetTruckBroken`), utöver den blockerade korridoren som redan fanns (`SetCorridorBlocked`).
+
+### Motivering
+
+"Känt och uppskjutet" i CLAUDE.md påpekade att stationer hade obegränsad kapacitet och ingen omställningstid, vilket gör jämförelser mellan planeringsmetoder orealistiska: en strategi som proppar en station full straffas aldrig. Störningar (NF-014) behövs för att kunna jämföra hur robusta strategierna är, inte bara hur snabba de är i en felfri värld.
+
+### Ändringar
+
+**core**
+- `Station` (`Models.cs`): nya valfria fält `Capacity` (null = obegränsat, som förut) och `ChangeoverSeconds` (default 0, som förut). Bakåtkompatibelt: befintliga datafiler som inte sätter dem beter sig exakt som innan.
+- `SimulationEngine.ChooseStation`: väljer bara bland stationer som har plats kvar (wip + inkommande uppdrag < kapacitet) och som inte är avstängda. Returnerar `null` om ingen kandidat har plats.
+- Order och pallar som inte får plats blir inte förkastade: en order läggs i en liten väntekö (`_pendingOrders`) och en pall som är klar men inte kan gå vidare blir `Blocked` och försöker igen varje tidssteg, utan att släppa sin plats på den station den redan står på.
+- `ProcessTime` lägger på stationens `ChangeoverSeconds` när produkten som bearbetas skiljer sig från den senaste på samma station.
+- `SimulationEngine.SetStationDown(id, bool)`: stänger av eller öppnar en station. En avstängd station tar inte emot nya pallar; pallar som redan bearbetas där blir kvar till den öppnas.
+- `SimulationEngine.SetTruckBroken(id, bool)`: fryser en truck på plats och släpper dess uppdrag (om den hade ett) så att en annan truck kan ta det. Kollisionsfri korridorblockering (`SetCorridorBlocked`) fanns redan sedan NF-010 och testas sedan tidigare.
+
+### Så testar du
+
+```bash
+dotnet test
+```
+
+Nya tester i `tests/Nordform.Sim.Core.Tests/CapacityAndDisruptionTests.cs`: kapacitetstaket hålls under hela körningen, omställningstid ger aldrig fler leveranser än utan, en avstängd station tar inte emot order förrän den öppnas igen, och en havererad trucks uppdrag slutförs av en annan truck.
+
+### Resultat
+
+Ingen påverkan på befintliga scenarier: `Capacity` och `ChangeoverSeconds` är inte satta i `data/`, så slumptalsföljden och alla 40 tidigare tester är oförändrade (verifierat, alla gröna). De nya reglerna syns bara när en layout faktiskt sätter dem.
+
+### Risker och begränsningar
+
+- En order som fastnar i väntekön för evigt (om stationen aldrig får plats) blockerar inte senare order från att försöka, men växer obegränsat om scenariot är felkonfigurerat. Inget skydd mot dödläge har byggts, det är utanför ärendets storlek (M).
+- En truck som havererar mitt i en lastning eller lossning fryser kvar i det tillståndet; pallen den bar räknas inte som levererad eller förlorad förrän trucken reparerade igen.
+- Ingen av `data/`-filerna sätter de nya fälten ännu. Det är en separat avvägning (NF-070, fler kartor) att bygga ett scenario som faktiskt övar kapacitetsgränser och störningar.
+
+### Checklista
+
+- [x] Bygger utan varningar
+- [x] Alla tester passerar (29 Core, 40 totalt)
+- [x] Nya tester för ny logik
+- [x] Samma seed ger samma resultat
+- [x] Tavlan i README är uppdaterad
+- [x] Ingen verklig kunddata i ändringen
